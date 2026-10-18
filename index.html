@@ -37,7 +37,8 @@ body{
   border-radius:50%;transition:all 1s cubic-bezier(.2,.8,.3,1)}
 #boot.open #rays{opacity:1;transform:translate(-50%,-50%) scale(1)}
 #gem{width:150px;cursor:pointer;position:relative;z-index:5;filter:drop-shadow(0 0 26px rgba(63,232,160,.55));
-  transition:transform .9s cubic-bezier(.3,1.4,.4,1);animation:gemFloat 3s ease-in-out infinite}
+  transition:transform .9s cubic-bezier(.3,1.4,.4,1);animation:gemIntro 1s cubic-bezier(.25,1.3,.4,1) both,gemFloat 3s 1s ease-in-out infinite}
+@keyframes gemIntro{0%{transform:scale(0) rotate(-160deg);opacity:0}55%{transform:scale(1.25) rotate(10deg);opacity:1}100%{transform:scale(1) rotate(0)}}
 #boot.open #gem{transform:scale(1.5) translateY(-6px);animation:none}
 @keyframes gemFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
 .gemGlow{position:absolute;inset:-46px;border-radius:50%;background:radial-gradient(circle,rgba(63,232,160,.28) 0%,transparent 65%);
@@ -325,7 +326,7 @@ body{
           </svg>
         </div>
       </div>
-      <div id="bootHint">轻 触 宝 石 · 开 启 手 机</div>
+      <div id="bootHint">泽禹，生日快乐</div>
     </div>
 
     <div class="flash" id="flash"></div>
@@ -583,7 +584,7 @@ function bootOpen(){
 }
 $("#gem").addEventListener("click",bootOpen);
 $("#boot").addEventListener("click",e=>{ if(e.target.id==="boot"||e.target.id==="bootHint") bootOpen(); });
-setTimeout(()=>{ if(!booted) bootOpen(); },4200);
+setTimeout(()=>{ if(!booted) bootOpen(); },1050);
 
 /* 开机音效 */
 function chime(){
