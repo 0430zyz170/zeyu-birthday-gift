@@ -75,6 +75,7 @@ body{
 
 /* ========== 锁屏 ========== */
 #lock{position:absolute;inset:0;z-index:100;background:#000 center/cover no-repeat;transition:transform .45s cubic-bezier(.3,.9,.3,1),opacity .45s;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+#lock *{touch-action:none}
 #lock .dim{position:absolute;inset:0;background:linear-gradient(rgba(0,0,0,.18) 0%,rgba(0,0,0,.05) 40%,rgba(0,0,0,.55) 100%)}
 .lock-time{position:absolute;top:74px;left:0;right:0;text-align:center;font-size:72px;font-weight:200;letter-spacing:2px;
   text-shadow:0 2px 18px rgba(0,0,0,.45)}
@@ -597,7 +598,7 @@ function chime(){
 
 /* ================= 锁屏手势 ================= */
 const lockEl=$("#lock"); let lkStart=null;
-lockEl.addEventListener("pointerdown",e=>{ lkStart={y:e.clientY,id:e.pointerId}; lockEl.style.transition="none"; });
+lockEl.addEventListener("pointerdown",e=>{ lkStart={y:e.clientY,id:e.pointerId}; lockEl.style.transition="none"; try{ lockEl.setPointerCapture(e.pointerId); }catch(_){} });
 lockEl.addEventListener("pointermove",e=>{
   if(!lkStart||e.pointerId!==lkStart.id) return;
   const dy=Math.min(0,e.clientY-lkStart.y);
@@ -610,6 +611,7 @@ lockEl.addEventListener("pointerup",e=>{
   lkStart=null;
 });
 lockEl.addEventListener("pointercancel",()=>{ lockEl.style.transition=""; lockEl.style.transform=""; lkStart=null; });
+lockEl.addEventListener("touchmove",e=>{ e.preventDefault(); }, {passive:false});
 let unlocked=false;
 function unlock(openMsg){
   if(unlocked) return; unlocked=true;
