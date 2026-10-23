@@ -121,6 +121,26 @@ body{
 .t-pic{background:linear-gradient(160deg,#ffa8c5,#f45f8f)}
 .t-watch{background:linear-gradient(160deg,#ff7d7d,#e02f2f)}
 .t-essay{background:linear-gradient(160deg,#7de3d2,#22a88f)}
+.t-takeout{background:linear-gradient(160deg,#ffb86b,#e8751a)}
+
+/* ========== 狗的外卖 ========== */
+.tk-card{margin:8px 12px 10px;background:#161f1b;border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:12px 14px}
+.tk-top{display:flex;gap:10px;align-items:flex-start}
+.tk-ava{width:42px;height:42px;border-radius:10px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:22px;flex:none}
+.tk-mid{flex:1;min-width:0}
+.tk-shop{font-size:14px;font-weight:600;color:#eafff5}
+.tk-tag{display:inline-block;margin-top:3px;padding:1px 8px;border-radius:10px;font-size:10px}
+.tk-rt{text-align:right;flex:none}
+.tk-status{font-size:10.5px;color:#3fe8a0;margin-bottom:2px}
+.tk-total{font-size:14px;font-weight:600;color:#ffb86b}
+.tk-items{margin-top:10px;display:flex;flex-direction:column;gap:2px}
+.tk-item{display:grid;grid-template-columns:1fr auto auto;gap:8px;font-size:12.5px;color:#cfe6dc;padding:1px 0}
+.tk-item span:nth-child(2),.tk-item span:nth-child(3){color:#8aa89b}
+.tk-more{font-size:11px;color:#6a8779;padding-top:3px}
+.tk-time{font-size:11px;color:#5f7a6f;margin-top:8px}
+.tk-group{border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);padding:8px 12px;margin:0 -12px}
+.tk-sub{display:flex;justify-content:space-between;font-size:13px;color:#8aa89b;padding:4px 0}
+.tk-total-line{color:#eafff5;font-weight:600;border-top:1px solid rgba(255,255,255,.1);margin-top:4px;padding-top:8px}
 
 /* ========== App 通用 ========== */
 .app{position:absolute;inset:0;z-index:80;background:#0d1211;display:flex;flex-direction:column;
@@ -566,6 +586,7 @@ body{
         <div class="appicon" data-app="files"><div class="tile t-files"><span class="glyph">📁</span></div><div class="name">文件</div></div>
         <div class="appicon" data-app="sticker"><div class="tile t-pic"><span class="glyph">📷</span></div><div class="name">大头贴</div></div>
         <div class="appicon" data-app="rec"><div class="tile t-rec"><span class="glyph">🎙️</span></div><div class="name">录音</div></div>
+        <div class="appicon" data-app="takeout"><div class="tile t-takeout"><span class="glyph">🍱</span><span class="badge">2</span></div><div class="name">狗的外卖</div></div>
       </div>
     </div>
 
@@ -620,6 +641,12 @@ body{
     <div class="app" id="app-watch">
       <div class="app-head"><button class="back" data-close="1">‹</button><div class="app-title">小红手表</div></div>
       <div class="app-body" id="watchBody"></div>
+    </div>
+
+    <!-- 狗的外卖 -->
+    <div class="app" id="app-takeout">
+      <div class="app-head"><button class="back" id="tkBack">‹</button><div class="app-title" id="tkTitle">狗的外卖 · 订单</div></div>
+      <div class="app-body" id="takeoutBody" style="padding:0"></div>
     </div>
 
     <!-- 小作文 -->
@@ -832,7 +859,7 @@ const I18N = {
     langTitle:"语言 / Language", close:"关闭", langLabel:"语言", closeCall:"通话已结束",
     offline:"离线数据", hum:"湿度", wind:"风速", daily:"每天自动更新 · 哈尔滨 / 北京",
     cities:{harbin:"哈尔滨",beijing:"北京"},
-    apps:{wechat:"微信",msg:"信息",tel:"电话",browser:"浏览器",weibo:"微博",watch:"小红手表",essay:"手写信",settings:"设置",weather:"天气",clock:"时钟",memo:"备忘录",files:"文件",sticker:"大头贴",rec:"录音"}
+    apps:{wechat:"微信",msg:"信息",tel:"电话",browser:"浏览器",weibo:"微博",watch:"小红手表",essay:"手写信",settings:"设置",weather:"天气",clock:"时钟",memo:"备忘录",files:"文件",sticker:"大头贴",rec:"录音",takeout:"狗的外卖"}
   },
   en:{
     bootLead:"Days until Zhang Zeyu's birthday", bootDateLbl:"April 30, 2027 · days remaining", dayUnit:"days",
@@ -845,7 +872,7 @@ const I18N = {
     langTitle:"Language", close:"Close", langLabel:"Language", closeCall:"Call ended",
     offline:"offline data", hum:"Humidity", wind:"Wind", daily:"Updates daily · Harbin / Beijing",
     cities:{harbin:"Harbin",beijing:"Beijing"},
-    apps:{wechat:"WeChat",msg:"Messages",tel:"Phone",browser:"Browser",weibo:"Weibo",watch:"Watch",essay:"Letter",settings:"Settings",weather:"Weather",clock:"Clock",memo:"Notes",files:"Files",sticker:"Photo Booth",rec:"Recorder"}
+    apps:{wechat:"WeChat",msg:"Messages",tel:"Phone",browser:"Browser",weibo:"Weibo",watch:"Watch",essay:"Letter",settings:"Settings",weather:"Weather",clock:"Clock",memo:"Notes",files:"Files",sticker:"Photo Booth",rec:"Recorder",takeout:"Dog Takeout"}
   },
   ja:{
     bootLead:"張澤禹の誕生日まで", bootDateLbl:"2027年4月30日 · 残り", dayUnit:"日",
@@ -858,7 +885,7 @@ const I18N = {
     langTitle:"言語 / Language", close:"閉じる", langLabel:"言語", closeCall:"通話終了",
     offline:"オフラインデータ", hum:"湿度", wind:"風速", daily:"毎日更新 · ハルビン / 北京",
     cities:{harbin:"ハルビン",beijing:"北京"},
-    apps:{wechat:"WeChat",msg:"メッセージ",tel:"電話",browser:"ブラウザ",weibo:"Weibo",watch:"ウォッチ",essay:"手紙",settings:"設定",weather:"天気",clock:"時計",memo:"メモ",files:"ファイル",sticker:"プリクラ",rec:"ボイスメモ"}
+    apps:{wechat:"WeChat",msg:"メッセージ",tel:"電話",browser:"ブラウザ",weibo:"Weibo",watch:"ウォッチ",essay:"手紙",settings:"設定",weather:"天気",clock:"時計",memo:"メモ",files:"ファイル",sticker:"プリクラ",rec:"ボイスメモ",takeout:"ドッグデリ"}
   },
   ko:{
     bootLead:"장쩌위의 생일까지", bootDateLbl:"2027년 4월 30일 · 남은 날", dayUnit:"일",
@@ -871,7 +898,7 @@ const I18N = {
     langTitle:"언어 / Language", close:"닫기", langLabel:"언어", closeCall:"통화 종료",
     offline:"오프라인 데이터", hum:"습도", wind:"풍속", daily:"매일 업데이트 · 하얼빈 / 베이징",
     cities:{harbin:"하얼빈",beijing:"베이징"},
-    apps:{wechat:"위챗",msg:"메시지",tel:"전화",browser:"브라우저",weibo:"웨이보",watch:"워치",essay:"편지",settings:"설정",weather:"날씨",clock:"시계",memo:"메모",files:"파일",sticker:"사진관",rec:"녹음"}
+    apps:{wechat:"위챗",msg:"메시지",tel:"전화",browser:"브라우저",weibo:"웨이보",watch:"워치",essay:"편지",settings:"설정",weather:"날씨",clock:"시계",memo:"메모",files:"파일",sticker:"사진관",rec:"녹음",takeout:"도그 테이크아웃"}
   },
   zhhk:{
     bootLead:"今日距離張澤禹嘅生日", bootDateLbl:"2027年4月30日 · 仲有咁多日", dayUnit:"日",
@@ -884,7 +911,7 @@ const I18N = {
     langTitle:"語言 / Language", close:"關閉", langLabel:"語言", closeCall:"通話已結束",
     offline:"離線資料", hum:"濕度", wind:"風速", daily:"每日自動更新 · 哈爾濱 / 北京",
     cities:{harbin:"哈爾濱",beijing:"北京"},
-    apps:{wechat:"微信",msg:"訊息",tel:"電話",browser:"瀏覽器",weibo:"微博",watch:"手錶",essay:"手寫信",settings:"設定",weather:"天氣",clock:"時鐘",memo:"備忘錄",files:"檔案",sticker:"貼紙相",rec:"錄音"}
+    apps:{wechat:"微信",msg:"訊息",tel:"電話",browser:"瀏覽器",weibo:"微博",watch:"手錶",essay:"手寫信",settings:"設定",weather:"天氣",clock:"時鐘",memo:"備忘錄",files:"檔案",sticker:"貼紙相",rec:"錄音",takeout:"狗嘅外賣"}
   },
   it:{
     bootLead:"Giorni al compleanno di Zhang Zeyu", bootDateLbl:"30 aprile 2027 · giorni rimanenti", dayUnit:"giorni",
@@ -897,7 +924,7 @@ const I18N = {
     langTitle:"Lingua / Language", close:"Chiudi", langLabel:"Lingua", closeCall:"Chiamata terminata",
     offline:"dati offline", hum:"Umidità", wind:"Vento", daily:"Aggiornato ogni giorno · Harbin / Pechino",
     cities:{harbin:"Harbin",beijing:"Pechino"},
-    apps:{wechat:"WeChat",msg:"Messaggi",tel:"Telefono",browser:"Browser",weibo:"Weibo",watch:"Orologio",essay:"Lettera",settings:"Impostazioni",weather:"Meteo",clock:"Sveglia",memo:"Note",files:"File",sticker:"Cabina foto",rec:"Registratore"}
+    apps:{wechat:"WeChat",msg:"Messaggi",tel:"Telefono",browser:"Browser",weibo:"Weibo",watch:"Orologio",essay:"Lettera",settings:"Impostazioni",weather:"Meteo",clock:"Sveglia",memo:"Note",files:"File",sticker:"Cabina foto",rec:"Registratore",takeout:"Deliveroo"}
   },
   th:{
     bootLead:"เหลืออีกกี่วันถึงวันเกิดจางเจ๋ออวี่", bootDateLbl:"30 เมษายน 2027 · เหลืออีก", dayUnit:"วัน",
@@ -910,7 +937,7 @@ const I18N = {
     langTitle:"ภาษา / Language", close:"ปิด", langLabel:"ภาษา", closeCall:"สิ้นสุดการโทร",
     offline:"ข้อมูลออฟไลน์", hum:"ความชื้น", wind:"ลม", daily:"อัปเดตทุกวัน · ฮาร์บิน / ปักกิ่ง",
     cities:{harbin:"ฮาร์บิน",beijing:"ปักกิ่ง"},
-    apps:{wechat:"WeChat",msg:"ข้อความ",tel:"โทรศัพท์",browser:"เบราว์เซอร์",weibo:"Weibo",watch:"นาฬิกา",essay:"จดหมาย",settings:"ตั้งค่า",weather:"อากาศ",clock:"นาฬิกา",memo:"บันทึก",files:"ไฟล์",sticker:"ตู้ถ่ายรูป",rec:"อัดเสียง"}
+    apps:{wechat:"WeChat",msg:"ข้อความ",tel:"โทรศัพท์",browser:"เบราว์เซอร์",weibo:"Weibo",watch:"นาฬิกา",essay:"จดหมาย",settings:"ตั้งค่า",weather:"อากาศ",clock:"นาฬิกา",memo:"บันทึก",files:"ไฟล์",sticker:"ตู้ถ่ายรูป",rec:"อัดเสียง",takeout:"ด็อกฟู้ด"}
   }
 };
 let LANG = "zh";
@@ -965,83 +992,71 @@ function openLangSheet(){
 }
 
 /* ================= 信息联系人（要改内容直接改这里） ================= */
+/* 信息 App 只放陌生号码恶意消息 + 哈尔滨朋友，家人全在微信 */
 const CHATS = {
-  mom:{name:"妈妈",ava:"💗",time:"今天",unread:true,preview:"大禹生日快乐！",
-    script:["大禹生日快乐！🎂","妈妈一早把长寿面煮好了，你爸非说给你留个鸡腿。","二十岁啦，妈妈就盼你平平安安、开开心心的。"],
-    quick:["谢谢妈妈","我好想你"],
-    pool:["哎，跟妈妈还客气啥。","妈妈也想你，啥时候回家？","在外面照顾好自己，别老熬夜。","钱不够就说，别硬撑。"]},
-  dad:{name:"爸爸",ava:"👨",time:"今天",unread:false,preview:"生日快乐，臭小子。",
-    script:["生日快乐，臭小子。","钱够不够花？不够跟爸说。","在外面别硬撑，家里永远有你一口饭。"],
-    quick:["谢谢爸","知道了"],
-    pool:["嗯。","行了，早点睡。","有事给爸打电话。"]},
-  zzx:{name:"朱志鑫",ava:"🐷",time:"今天",unread:true,preview:"生日快乐兄弟",
-    script:["生日快乐兄弟","嗯嗯 谢了啊","我先去练了 回聊"],
-    quick:["谢谢","回头聊"],
-    pool:["嗯嗯","好","哈哈","在忙 回聊"]},
-  zh:{name:"左航",ava:"🛹",time:"今天",unread:false,preview:"生日快乐宝",
-    script:["生日快乐宝","收到啦","晚点聊"],
-    quick:["谢谢","嗯"],
-    pool:["嗯","收到","在排练"]},
-  zj:{name:"张极",ava:"🎤",time:"今天",unread:false,preview:"生日快乐 大禹",
-    script:["生日快乐 大禹","好","嗯"],
-    quick:["谢谢","嗯"],
-    pool:["嗯","好","哈哈"]},
-  sxh:{name:"苏新皓",ava:"🎧",time:"今天",unread:false,preview:"生日快乐！",
-    script:["生日快乐！","哈哈 好","先不聊了"],
-    quick:["谢谢","好"],
-    pool:["哈哈","好","嗯嗯"]},
   friend:{name:"朋友",ava:"🧣",time:"今天",unread:true,preview:"哈尔滨下雪了",
-    script:["大禹！生日快乐！","哈尔滨今天下雪了，我在楼下给你堆了个雪人，叫大禹。","等你有空来哈尔滨，我带你吃锅包肉，我请客。"],
-    quick:["谢谢你","我也想你们"],
+    script:["大禹！生日快乐！🎂","哈尔滨今天下雪了，我在楼下给你堆了个雪人，叫大禹。","等你有空来哈尔滨，我带你吃锅包肉，我请客。","对了，给你发了照片，在群里。"],
+    quick:["谢谢你","我也想你们","寒假一定来"],
     pool:["跟我还客气啥。","雪人化了我就再堆一个。","你啥时候来，我提前去接你。","这边冷，你来了我给你找件厚的。"]},
-  great:{name:"太爷爷",ava:"👴",time:"",unread:false,preview:"",script:[],quick:[],pool:[]}
+  s1:{name:"+86 139 **** 0921",ava:"❓",time:"今天 02:17",unread:true,preview:"你就是张泽禹吧？",
+    script:["你就是张泽禹吧？","别装了，我查过了。","你以为你红了就了不起？","早点滚出娱乐圈吧。"],
+    quick:[],pool:[]},
+  s2:{name:"+86 135 **** 7733",ava:"❓",time:"昨天 15:08",unread:false,preview:"唱得也就那样",
+    script:["唱得也就那样。","粉丝滤镜太厚了吧。","等着糊吧你。"],
+    quick:[],pool:[]},
+  s3:{name:"+86 182 **** 4466",ava:"❓",time:"前天 23:51",unread:false,preview:"再不还钱报警了",
+    script:["再不还钱报警了。","别以为换个号码就找不到你。","欠债还钱天经地义。"],
+    quick:[],pool:[]}
 };
 function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
 function aiReply(k,t){
   const c = CHATS[k]; if(!c || !c.pool || !c.pool.length) return null;
-  if(k==="mom"){
-    if(/谢谢|谢/.test(t)) return pick(["跟妈妈还客气啥呀。","傻孩子，跟妈说啥谢。","你开心妈妈就高兴。"]);
-    if(/想你|想妈|回家/.test(t)) return pick(["妈妈也想你，啥时候回来？","家里的门一直给你留着。","想回来就回来，妈给你做饭。"]);
-    if(/生日|蛋糕/.test(t)) return pick(["蛋糕妈妈给你留了一块，回来吃。","生日要开心呀 🎂"]);
-    if(/累|忙/.test(t)) return pick(["别太累了，身体要紧。","忙完就早点睡，妈不催你。"]);
-    if(/[?？]/.test(t)) return pick(["嗯？怎么啦儿子。","你说，妈听着呢。"]);
-    return pick(c.pool);
-  }
-  if(k==="dad"){
-    if(/谢谢|谢/.test(t)) return pick(["嗯，一家人不说这个。","行了，别跟爸客气。"]);
-    if(/想你|回家/.test(t)) return pick(["想回就回。","家里都挺好，你别惦记。"]);
-    return pick(c.pool);
-  }
   if(k==="friend"){
     if(/谢谢|谢/.test(t)) return pick(["跟我还客气啥。","客气啥呀，咱俩谁跟谁。"]);
     if(/想/.test(t)) return pick(["我也想你啊，赶紧来哈尔滨。","想就来，我随时有空。"]);
     if(/雪|冷/.test(t)) return pick(["这边零下十几度，你来了记得穿厚点。","雪挺大的，雪人已经堆好了。"]);
+    if(/寒假|来/.test(t)) return pick(["好啊！你订好票告诉我，我去接站。"]);
     return pick(c.pool);
   }
-  if(/[?？]/.test(t)) return pick(["啊？","啥","回头说"]);
-  return pick(c.pool);
+  return null;
 }
 
 /* ================= 微信 ================= */
 const WX_CHATS = {
+  mom:{name:"妈妈",ava:"💗",time:"今天",unread:1,role:"family",
+    msgs:[
+      {me:false,n:"妈妈",text:"大禹生日快乐！🎂"},
+      {me:false,n:"妈妈",text:"给你看老蔫儿今天的照片，他终于把窝挪到暖气片旁边了。"},
+      {me:false,n:"妈妈",text":"复制粘贴今天又把沙发套抓坏了，我刚换的。"},
+      {me:false,n:"妈妈",text":"你爸说给你留了鸡腿，等你回来热一热就能吃。"},
+      {me:true,text:"谢谢妈妈！等我下通告就回"},
+      {me:false,n:"妈妈",text:"好好好，不着急。外面照顾好自己，别老熬夜。"}
+    ]},
+  dad:{name:"爸爸",ava:"👨",time:"今天",unread:0,role:"family",
+    msgs:[
+      {me:false,n:"爸爸",text:"生日快乐。"},
+      {me:true,text:"谢谢爸"},
+      {me:false,n:"爸爸",text:"钱够花不够？不够跟我说。"},
+      {me:true,text:"够的，爸别担心"},
+      {me:false,n:"爸爸",text:"嗯。家里都挺好，不用惦记。"}
+    ]},
+  grandpa:{name:"爷爷",ava:"👴",time:"昨天",unread:0,role:"family",
+    msgs:[
+      {me:false,n:"爷爷",text:"大禹啊，爷爷在电视上看到你了，挺好的。"},
+      {me:true,text:"爷爷好！我下周回来看您"},
+      {me:false,n:"爷爷",text:"好好好，爷爷给你炖鸡汤。天凉了，多穿点。"}
+    ]},
   staff:{name:"士大夫",ava:"📋",time:"昨天",unread:2,
     msgs:[
       {me:false,type:"note",text:"泽禹，跟你说个事：这个综艺你肯定上不了。因为团体为先，你要以团体为主，公司这边的安排你配合一下。"},
       {me:true,text:"好的"}
     ]},
-  family:{name:"大禹一家人",ava:"🏠",time:"今天",unread:1,
+  family:{name:"大禹一家人",ava:"🏠",time:"今天",unread:0,
     msgs:[
-      {me:false,n:"妈妈",text:"儿子生日快乐！妈妈给你发个红包，收一下。"},
-      {me:false,n:"爸爸",text:"生日快乐。"},
-      {me:true,text:"谢谢爸妈！"}
+      {me:false,n:"妈妈",text:"大家今天都早点回来吃饭，给大禹庆生！"},
+      {me:false,n:"爸爸",text:"我订了蛋糕，6 点到。"},
+      {me:true,text:"我尽量赶回去！"}
     ],role:"family"},
-  team:{name:"TOP登陆少年",ava:"🎵",time:"今天",unread:0,
-    msgs:[
-      {me:false,n:"朱志鑫",text:"大禹生日快乐"},
-      {me:false,n:"左航",text:"生日快乐宝"},
-      {me:false,n:"张极",text:"生日快乐"},
-      {me:true,text:"谢谢兄弟们"}
-    ],role:"team"},
   filehelper:{name:"文件传输助手",ava:"📁",time:"",unread:0,
     msgs:[{me:true,text:"攀岩训练计划.docx"}]}
 };
@@ -1446,9 +1461,7 @@ INITS.wechat=function(){
         const bb=document.createElement("div"); bb.className="wx-bubble me"; bb.textContent=v;
         rr.appendChild(bb); thread.appendChild(rr);
         body.scrollTop=body.scrollHeight;
-        const rep = c.role==="family"
-          ? pick(["妈妈：好，妈妈等你回家吃饭。","爸爸：嗯，注意身体。","妈妈：生日快乐儿子！"])
-          : pick(["朱志鑫：嗯嗯","左航：好","张极：收到"]);
+        const rep = pick(["妈妈：好，妈妈等你回家吃饭。","爸爸：嗯，注意身体。","妈妈：好好好，不着急。"]);
         setTimeout(()=>{
           if(curKey!==k) return;
           c.msgs.push({me:false,text:rep});
@@ -2130,7 +2143,120 @@ WATCH_GAMES.catch=function(){
     document.removeEventListener("keydown",key); });
 };
 
-/* ================= 小作文 ================= */
+/* ================= 狗的外卖订单 ================= */
+/* 张泽禹的外卖历史 —— 甜食、东北菜、小甜水 */
+const ORDERS = [
+  {id:"tk001",shop:"好利来蛋糕·哈尔滨旗舰店",avatar:"🍰",time:"今天 14:22",status:"配送中",total:138.8,items:[
+    {n:"半熟芝士蛋糕（原味）",p:68},
+    {n:"抹茶生巧 6 枚装",p:38},
+    {n:"芒果班戟 ×2",p:32.8}
+  ],tag:"甜食"},
+  {id:"tk002",shop:"蜜雪冰城",avatar:"🧋",time:"今天 11:05",status:"已送达",total:32,items:[
+    {n:"珍珠奶茶（大杯）",p:12},
+    {n:"草莓圣代",p:8},
+    {n:"柠檬水 ×2",p:12}
+  ],tag:"小甜水"},
+  {id:"tk003",shop:"老昌春饼·中央大街店",avatar:"🥟",time:"昨天 19:48",status:"已完成",total:166,items:[
+    {n:"东北酸菜饺子（30只）",p:58},
+    {n:"锅包肉（大份）",p:48},
+    {n:"地三鲜",p:28},
+    {n:"凉拌东北大拉皮",p:18},
+    {n:"米饭 ×3",p:14}
+  ],tag:"东北菜"},
+  {id:"tk004",shop:"奈雪的茶",avatar:"🍹",time:"昨天 15:30",status:"已完成",total:42,items:[
+    {n:"霸气芝士草莓",p:22},
+    {n:"奥利奥宝藏奶茶",p:20}
+  ],tag:"小甜水"},
+  {id:"tk005",shop:"马迭尔冰棍",avatar:"🍦",time:"前天 22:10",status:"已完成",total:28,items:[
+    {n:"原味马迭尔 ×4",p:20},
+    {n:"朗姆酒口味 ×2",p:8}
+  ],tag:"甜食"},
+  {id:"tk006",shop:"张包铺·老道外店",avatar:"🥟",time:"前天 18:20",status:"已完成",total:98,items:[
+    {n:"排骨包子 ×6",p:36},
+    {n:"三鲜包子 ×6",p:30},
+    {n:"小米粥 ×2",p:12},
+    {n:"酱牛肉（小份）",p:20}
+  ],tag:"东北菜"},
+  {id:"tk007",shop:"喜茶",avatar:"🧃",time:"3 天前 16:45",status:"已完成",total:38,items:[
+    {n:"多肉葡萄（大杯）",p:24},
+    {n:"脆波波",p:14}
+  ],tag:"小甜水"},
+  {id:"tk008",shop:"格瓦斯小铺",avatar:"🥤",time:"4 天前 12:00",status:"已完成",total:22,items:[
+    {n:"正宗秋林格瓦斯 ×3",p:18},
+    {n:"哈尔滨啤酒 ×2",p:4}
+  ],tag:"小甜水"}
+];
+const TK_ICONS = {甜食:"🍰", 东北菜:"🥟", 小甜水:"🧋"};
+const TK_COLORS = {甜食:"#ffb8c7", 东北菜:"#ffd47a", 小甜水:"#a8e0ff"};
+INITS.takeout=function(){
+  const b=$("#takeoutBody"), title=$("#tkTitle"), back=$("#tkBack");
+  let cur=null;
+  back.onclick=()=>{ if(cur){ cur=null; showList(); } else closeApp(); };
+
+  function showList(){
+    cur=null; title.textContent="狗的外卖 · 订单"; back.removeAttribute("data-close"); back.onclick=()=>closeApp();
+    b.innerHTML='<div style="padding:14px 16px 6px"><div style="font-size:14px;font-weight:600;color:#eafff5;margin-bottom:8px">张泽禹的外卖历史</div>'+
+      '<div style="display:flex;gap:6px;margin-bottom:12px">'+
+      '<div style="flex:1;background:rgba(255,255,255,.06);border-radius:10px;padding:8px;text-align:center;font-size:12px;color:#a8e0ff">🧋 '+ORDERS.filter(o=>o.tag==="小甜水").length+' 单</div>'+
+      '<div style="flex:1;background:rgba(255,255,255,.06);border-radius:10px;padding:8px;text-align:center;font-size:12px;color:#ffd47a">🥟 '+ORDERS.filter(o=>o.tag==="东北菜").length+' 单</div>'+
+      '<div style="flex:1;background:rgba(255,255,255,.06);border-radius:10px;padding:8px;text-align:center;font-size:12px;color:#ffb8c7">🍰 '+ORDERS.filter(o=>o.tag==="甜食").length+' 单</div>'+
+      '</div></div>';
+    ORDERS.forEach(o=>{
+      const d=document.createElement("div"); d.className="tk-card";
+      d.innerHTML='<div class="tk-top"><div class="tk-ava"></div><div class="tk-mid"><div class="tk-shop"></div><div class="tk-tag"></div></div>'+
+        '<div class="tk-rt"><div class="tk-status"></div><div class="tk-total"></div></div></div>'+
+        '<div class="tk-items"></div><div class="tk-time"></div>';
+      d.querySelector(".tk-ava").textContent=o.avatar;
+      d.querySelector(".tk-shop").textContent=o.shop;
+      const tag=d.querySelector(".tk-tag"); tag.textContent=o.tag; tag.style.background=TK_COLORS[o.tag]+("2a"); tag.style.color=TK_COLORS[o.tag];
+      d.querySelector(".tk-status").textContent=o.status;
+      d.querySelector(".tk-total").textContent="¥ "+o.total.toFixed(1);
+      const items=d.querySelector(".tk-items");
+      o.items.slice(0,2).forEach(it=>{
+        const row=document.createElement("div"); row.className="tk-item";
+        row.innerHTML='<span></span><span></span><span></span>';
+        row.querySelectorAll("span")[0].textContent="· "+it.n;
+        row.querySelectorAll("span")[1].textContent="×1";
+        row.querySelectorAll("span")[2].textContent="¥ "+it.p;
+        items.appendChild(row);
+      });
+      if(o.items.length>2){
+        const more=document.createElement("div"); more.className="tk-more"; more.textContent="还有 "+(o.items.length-2)+" 件…";
+        items.appendChild(more);
+      }
+      d.querySelector(".tk-time").textContent=o.time;
+      d.onclick=()=>openDetail(o);
+      b.appendChild(d);
+    });
+  }
+  function openDetail(o){
+    cur=o.id; title.textContent=o.shop; back.setAttribute("data-close","1"); back.onclick=()=>{ cur=null; showList(); };
+    b.innerHTML='<div style="padding:18px 16px;background:linear-gradient(160deg,#1f2a24,#0d1211)">'+
+      '<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">'+
+      '<div style="width:54px;height:54px;border-radius:14px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:28px">'+o.avatar+'</div>'+
+      '<div style="flex:1"><div style="font-size:16px;font-weight:600;color:#eafff5">'+o.shop+'</div>'+
+      '<div style="font-size:12px;color:#8aa89b;margin-top:2px">'+o.time+' · '+o.status+'</div></div>'+
+      '</div></div>'+
+      '<div style="padding:4px 16px 16px">'+
+      '<div style="font-size:12px;color:#8aa89b;margin:10px 0 6px">商品清单</div>'+
+      '<div class="tk-group">';
+    let sub=0;
+    o.items.forEach(it=>{
+      sub+=it.p;
+      b.innerHTML+='<div class="tk-item"><span>· '+it.n+'</span><span></span><span>¥ '+it.p+'</span></div>';
+    });
+    b.innerHTML+='</div>'+
+      '<div class="tk-sub"><span>小计</span><span>¥ '+sub.toFixed(1)+'</span></div>'+
+      '<div class="tk-sub"><span>配送费</span><span>¥ '+(o.total>sub?(o.total-sub).toFixed(1):'0.0')+'</span></div>'+
+      '<div class="tk-sub tk-total-line"><span>合计</span><span>¥ '+o.total.toFixed(1)+'</span></div>'+
+      '<div style="margin-top:14px;display:flex;gap:8px">'+
+      '<button class="bigbtn tk-btn" style="flex:1;background:rgba(255,255,255,.08);color:#eafff5">再来一单</button>'+
+      '<button class="bigbtn tk-btn" style="flex:1;background:#e8751a;color:#fff">联系商家</button>'+
+      '</div></div>';
+    b.querySelectorAll(".tk-btn").forEach(btn=>{ btn.onclick=()=>toast("狗的外卖还没登录哦 · 模拟 App"); });
+  }
+  showList();
+};
 INITS.essay=function(){
   const b=$("#essayBody");
   b.innerHTML='<h1>好朋友们</h1><div class="sub">—— 写给我的好朋友们</div>';
@@ -2153,6 +2279,4 @@ if(lockLangBtn) lockLangBtn.onclick = openLangSheet;
 applyLang(LANG);
 loadWeather();
 setInterval(paintCountdown, 600000);
-</script>
-</body>
-</html>
+</script
