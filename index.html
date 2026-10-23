@@ -530,7 +530,7 @@ body{
         <div class="ava">💗</div>
         <div style="flex:1;min-width:0">
           <div class="nt"><b id="notiName">妈妈</b> <span id="notiNow">现在</span></div>
-          <div class="nb" id="notiText">大宇生日快乐！妈妈给你发了消息，醒来记得看。</div>
+          <div class="nb" id="notiText">大禹生日快乐！妈妈给你发了消息，醒来记得看。</div>
         </div>
       </div>
       <div class="lock-kpad">
@@ -828,7 +828,7 @@ const I18N = {
     widgetSub:"有人惦记着，就是好事",
     pwTitle:"输入锁屏密码", forgot:"忘记密码？", badPwd:"密码不对，再想想～",
     hintPwd:"提示：密码是泽禹的生日，年(两位)月日", notiFirstUnlock:"先输入锁屏密码",
-    notiName:"妈妈", notiNow:"现在", notiText:"大宇生日快乐！妈妈给你发了消息，醒来记得看。",
+    notiName:"妈妈", notiNow:"现在", notiText:"大禹生日快乐！妈妈给你发了消息，醒来记得看。",
     langTitle:"语言 / Language", close:"关闭", langLabel:"语言", closeCall:"通话已结束",
     offline:"离线数据", hum:"湿度", wind:"风速", daily:"每天自动更新 · 哈尔滨 / 北京",
     cities:{harbin:"哈尔滨",beijing:"北京"},
@@ -1151,18 +1151,30 @@ function bootOpen(){
 $("#boot").addEventListener("click",bootOpen);
 setTimeout(()=>{ if(!booted) bootOpen(); },4300);
 
-/* 开机音效 */
-function chime(){
-  try{
-    const ac=new (window.AudioContext||window.webkitAudioContext)();
-    const play=(f,t0,dur)=>{ const o=ac.createOscillator(),g=ac.createGain();
-      o.type="sine"; o.frequency.value=f; o.connect(g); g.connect(ac.destination);
-      g.gain.setValueAtTime(0,t0); g.gain.linearRampToValueAtTime(.16,t0+.02);
-      g.gain.exponentialRampToValueAtTime(.001,t0+dur);
-      o.start(t0); o.stop(t0+dur); };
-    const t=ac.currentTime; play(659.25,t,.5); play(987.77,t+.14,.8);
-  }catch(e){}
+/* 音效工具 — Web Audio 纯合成，无需外置音频文件 */
+let _ac=null;
+function _audio(){ try{ if(!_ac){ _ac=new (window.AudioContext||window.webkitAudioContext)(); } if(_ac.state==="suspended") _ac.resume(); }catch(e){} return _ac; }
+function tone(freq, dur, type, gain){
+  try{ const ac=_audio(); if(!ac) return; type=type||"sine"; gain=gain||.16;
+    const t=ac.currentTime; const o=ac.createOscillator(), g=ac.createGain();
+    o.type=type; o.frequency.value=freq; o.connect(g); g.connect(ac.destination);
+    g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(gain,t+.01);
+    g.gain.exponentialRampToValueAtTime(.001,t+dur);
+    o.start(t); o.stop(t+dur); }catch(e){}
 }
+/* 开机音效（保留原有两音） */
+function chime(){ try{ tone(659.25,.5,"sine",.16); setTimeout(()=>tone(987.77,.8,"sine",.16),140); }catch(e){} }
+/* 键盘按键音 — 根据数字变音调，更像真手机 */
+function keyTone(n){
+  const base=[523,587,659,698,784,880,988,1047,1175,784][n]||784;
+  tone(base,.07,"sine",.18);
+}
+/* 删除键音 — 偏低、短 */
+function delTone(){ tone(420,.06,"triangle",.14); }
+/* 解锁成功 — 上升两音 */
+function unlockTone(){ try{ tone(523,.12,"sine",.18); setTimeout(()=>tone(784,.22,"sine",.20),110); }catch(e){} }
+/* 密码错 — 震动+短促 buzz */
+function wrongTone(){ try{ tone(220,.18,"square",.10); setTimeout(()=>tone(180,.22,"square",.10),140); }catch(e){} }
 
 /* ================= 锁屏：密码解锁 ================= */
 const lockEl=$("#lock");
@@ -1179,9 +1191,11 @@ function renderDots(){
 }
 function checkPwd(){
   if(lkBuf===getPwd()){
+    unlockTone();
     lockEl.classList.add("unlocked");
     setTimeout(()=>{ unlock(); },320);
   }else{
+    wrongTone();
     lockEl.classList.add("bad");
     try{ if(navigator.vibrate) navigator.vibrate(60); }catch(e){}
     setTimeout(()=>{ lockEl.classList.remove("bad"); lkBuf=""; renderDots(); },430);
@@ -1190,10 +1204,11 @@ function checkPwd(){
 }
 function addDigit(n){
   if(lkBuf.length>=6) return;
+  keyTone(parseInt(n,10));
   lkBuf+=n; renderDots();
   if(lkBuf.length===6) setTimeout(checkPwd,140);
 }
-function delDigit(){ lkBuf=lkBuf.slice(0,-1); renderDots(); }
+function delDigit(){ delTone(); lkBuf=lkBuf.slice(0,-1); renderDots(); }
 (function buildKeypad(){
   const kp=$("#kpad"); if(!kp) return;
   const keys=["1","2","3","4","5","6","7","8","9","","0","⌫"];
