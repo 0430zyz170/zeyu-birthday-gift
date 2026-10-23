@@ -298,35 +298,212 @@ body{
   border:1px solid rgba(63,232,160,.3);color:#c9ffe6;padding:10px 20px;border-radius:22px;font-size:13.5px;z-index:140;
   opacity:0;transition:.3s;pointer-events:none;white-space:nowrap}
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ========== 前置镜头遮挡（居中挖孔） ========== */
+#notch{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:13px;height:13px;border-radius:50%;
+  background:#000;z-index:400;pointer-events:none;box-shadow:0 0 0 2.5px #000,inset 0 0 2px rgba(60,90,255,.55)}
+#notch:after{content:"";position:absolute;inset:3px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#1b2a4a,#05070d)}
+
+/* ========== 华为开机 ========== */
+#boot{background:#000;justify-content:center;gap:0;transition:opacity .7s}
+#boot.hide{opacity:0;pointer-events:none}
+.hw-pack{display:flex;flex-direction:column;align-items:center;gap:14px;padding:0 30px;text-align:center}
+.hw-logo{font-size:34px;font-weight:600;letter-spacing:9px;color:#fff;opacity:0;
+  animation:hwLogo 1.5s cubic-bezier(.2,.8,.2,1) both}
+@keyframes hwLogo{0%{opacity:0;transform:scale(1.18);filter:blur(6px)}45%{opacity:1;filter:blur(0)}100%{opacity:1;transform:scale(1)}}
+.hw-os{font-size:11.5px;letter-spacing:4px;color:#8d949c;opacity:0;animation:fadeUp .8s .9s both}
+.boot-count{margin-top:44px;font-size:13px;line-height:2.1;color:#cfe6dc;opacity:0;animation:fadeUp .9s 1.35s both}
+.boot-count b{display:block;font-size:34px;font-weight:600;color:#3fe8a0;letter-spacing:1px;margin:2px 0 4px}
+.boot-count span{display:block;font-size:11.5px;color:#7d948b;letter-spacing:1px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.boot-bar{position:absolute;bottom:86px;left:50%;transform:translateX(-50%);width:96px;height:2px;border-radius:2px;background:rgba(255,255,255,.14);overflow:hidden}
+.boot-bar i{display:block;height:100%;width:40%;background:#3fe8a0;border-radius:2px;animation:barRun 1.1s .9s ease-in-out infinite}
+@keyframes barRun{0%{transform:translateX(-110%)}100%{transform:translateX(310%)}}
+
+/* ========== 锁屏：密码 ========== */
+.lk-count{position:absolute;top:192px;left:0;right:0;text-align:center;font-size:12.5px;color:#d7efe4;opacity:.78;
+  text-shadow:0 1px 8px rgba(0,0,0,.6);letter-spacing:.5px}
+.lk-weather{position:absolute;top:212px;left:0;right:0;text-align:center;font-size:12px;color:#cfe6dc;opacity:.62;
+  text-shadow:0 1px 8px rgba(0,0,0,.6)}
+.lock-kpad{position:absolute;bottom:18px;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:12px;padding:0 22px}
+.lk-pwtitle{font-size:12.5px;color:#eafff5;opacity:.72;letter-spacing:.6px}
+.lk-dots{display:flex;gap:15px;height:14px;align-items:center;justify-content:center;margin-top:-2px}
+.lk-dot{width:11px;height:11px;border-radius:50%;border:1.5px solid rgba(255,255,255,.55);transition:.15s}
+.lk-dot.on{background:#fff;border-color:#fff;transform:scale(1.06)}
+#lock.bad .lk-dots{animation:shake .42s both}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-9px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(4px)}}
+.kpad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 16px;width:100%;max-width:286px}
+.kbtn{width:58px;height:58px;justify-self:center;border-radius:50%;border:none;background:rgba(255,255,255,.13);backdrop-filter:blur(10px);color:#fff;
+  font-size:24px;font-weight:300;display:flex;align-items:center;justify-content:center;cursor:pointer;
+  transition:background .12s,transform .1s;font-family:inherit}
+.kbtn:active{background:rgba(255,255,255,.3);transform:scale(.94)}
+.kbtn.ghost{background:transparent;font-size:13.5px;backdrop-filter:none;color:rgba(255,255,255,.8)}
+.kbtn.del{background:transparent;backdrop-filter:none;font-size:19px}
+.lk-forgot{font-size:11.5px;color:rgba(255,255,255,.55);letter-spacing:.5px;padding:2px 8px}
+/* 矮屏（桌面预览 / 小屏）压缩锁屏布局，避免键盘压到内容 */
+@media (max-height:760px){
+  .lock-time{font-size:54px;top:56px}
+  .lock-date{top:124px;font-size:14px}
+  .lk-count{top:148px}
+  .lk-weather{top:167px}
+  .lock-noti{top:190px;padding:10px 13px}
+  .lock-kpad{bottom:12px;gap:9px}
+  .kpad{gap:8px 12px}
+  .kbtn{width:48px;height:48px;font-size:21px}
+  #lockLang{top:34px;right:10px}
+}
+#lock.unlocked{transform:translateY(-8%) scale(1.05);opacity:0;pointer-events:none}
+
+/* ========== 锁屏语言切换 ========== */
+#lockLang{position:absolute;top:42px;right:14px;z-index:115;background:rgba(255,255,255,.16);backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.22);color:#fff;border-radius:15px;padding:6px 11px;font-size:11.5px;cursor:pointer;
+  font-family:inherit;display:flex;align-items:center;gap:5px}
+#lockLang:active{background:rgba(255,255,255,.3)}
+#langSheet{position:absolute;inset:0;z-index:210;background:rgba(6,10,9,.88);backdrop-filter:blur(14px);display:none;
+  align-items:center;justify-content:center;padding:20px}
+#langSheet.on{display:flex}
+.lang-wrap{width:100%;max-width:330px;max-height:88%;background:#141b19;border:1px solid rgba(255,255,255,.09);
+  border-radius:20px;padding:16px;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.lang-hd{font-size:14px;font-weight:600;text-align:center;margin-bottom:10px}
+.lang-list{overflow-y:auto;flex:1}
+.lang-opt{display:flex;align-items:center;gap:11px;padding:12px;border-radius:12px;font-size:14.5px;cursor:pointer}
+.lang-opt:active{background:rgba(255,255,255,.06)}
+.lang-opt.on{background:rgba(63,232,160,.14);color:#b9ffe0}
+.lang-opt .fg{font-size:19px;flex:none}
+.lang-opt .ck{margin-left:auto;color:#3fe8a0;font-size:15px}
+.lang-close{margin-top:12px;width:100%;padding:11px;border-radius:14px;border:none;background:rgba(255,255,255,.1);
+  color:#eafff5;font-size:14px;font-family:inherit;cursor:pointer}
+
+/* ========== 图标（贴近真机） ========== */
+.t-wx{background:linear-gradient(160deg,#5ee371,#09b83e)}
+.t-tel{background:linear-gradient(160deg,#6ff09a,#12b34b)}
+.t-browser{background:linear-gradient(160deg,#7fc4ff,#1a73e8)}
+.t-set{background:linear-gradient(160deg,#b9c3c9,#6c7780)}
+.t-xhs{background:linear-gradient(160deg,#ff6b6b,#e51c1c)}
+.t-clock{background:linear-gradient(160deg,#4a4a52,#16161a)}
+.t-weather{background:linear-gradient(160deg,#8ed6ff,#2f8cf5)}
+.t-weibo{background:linear-gradient(160deg,#ffb37a,#e6162d)}
+.tile .glyph{font-size:27px;line-height:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.18))}
+.icon-emoji{font-size:26px}
+#appgrid{top:132px;gap:22px 8px}
+
+/* ========== 快捷回复 ========== */
+#quickRow{display:flex;gap:8px;overflow-x:auto;padding:8px 14px 0;scrollbar-width:none}
+#quickRow::-webkit-scrollbar{display:none}
+.qchip{flex:none;background:rgba(63,232,160,.13);border:1px solid rgba(63,232,160,.32);color:#b9ffe0;border-radius:16px;
+  padding:7px 14px;font-size:13px;cursor:pointer;font-family:inherit;white-space:nowrap}
+.qchip:active{background:rgba(63,232,160,.28)}
+
+/* ========== 微信 ========== */
+#app-wechat{background:#111413}
+.wx-tabs{display:flex;border-top:1px solid rgba(255,255,255,.07);background:#0b0d0c}
+.wx-tab{flex:1;text-align:center;padding:9px 0 12px;font-size:11px;color:#6d7772;cursor:pointer}
+.wx-tab .ti{display:block;font-size:19px;margin-bottom:2px;line-height:1}
+.wx-tab.on{color:#09b83e}
+.wx-item{display:flex;gap:12px;align-items:center;padding:12px 15px;border-bottom:1px solid rgba(255,255,255,.045);cursor:pointer}
+.wx-item:active{background:rgba(255,255,255,.035)}
+.wx-ava{width:46px;height:46px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:23px;flex:none;
+  background:linear-gradient(135deg,#2f4a3c,#1e2f27)}
+.wx-main{flex:1;min-width:0}
+.wx-name{font-size:15px;font-weight:600}
+.wx-pre{font-size:12.5px;color:#7d8a84;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wx-time{font-size:10.5px;color:#5c6862}
+.wx-tag{background:#ff3b30;color:#fff;border-radius:9px;font-size:10px;min-width:17px;height:17px;padding:0 5px;
+  display:flex;align-items:center;justify-content:center;margin-top:5px}
+.wx-bubble.them{background:#262b29;color:#e6efe9;border-radius:5px 14px 14px 14px}
+.wx-bubble.me{background:#0d7a3a;color:#e9fff1;border-radius:14px 5px 14px 14px;margin-left:auto}
+.wx-bubble{max-width:74%;padding:10px 13px;border-radius:14px;font-size:14.5px;line-height:1.65;white-space:pre-wrap}
+.wx-note{background:#20262a;border-left:3px solid #c8a24a;border-radius:6px;padding:11px 13px;font-size:12.5px;
+  color:#d7dde0;line-height:1.75;margin:10px 0;white-space:pre-wrap}
+.wx-me{display:flex;flex-direction:column;align-items:center;padding:34px 20px;gap:12px}
+.wx-me .big{width:74px;height:74px;border-radius:12px;background:linear-gradient(135deg,#3fe8a0,#0f8f5f);display:flex;
+  align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#04241a}
+.wx-me .nm{font-size:19px;font-weight:600}
+.wx-me .id{font-size:12px;color:#7d8a84}
+.wx-row{width:100%;display:flex;justify-content:space-between;padding:13px 4px;border-bottom:1px solid rgba(255,255,255,.05);
+  font-size:14px}
+
+/* ========== 电话 ========== */
+.ph-tabs{display:flex;border-bottom:1px solid rgba(255,255,255,.07)}
+.ph-tab{flex:1;text-align:center;padding:11px 0;font-size:14px;color:#7d8a84;cursor:pointer}
+.ph-tab.on{color:#3fe8a0;border-bottom:2px solid #3fe8a0}
+.ph-item{display:flex;gap:12px;align-items:center;padding:13px 15px;border-bottom:1px solid rgba(255,255,255,.05);cursor:pointer}
+.ph-item.locked{cursor:not-allowed;opacity:.6}
+.ph-item .pa{width:40px;height:40px;border-radius:50%;background:#243230;display:flex;align-items:center;justify-content:center;font-size:19px;flex:none}
+.ph-item .pn{font-size:15px;font-weight:600}
+.ph-item .pd{font-size:11.5px;color:#6c877c;margin-top:3px}
+.ph-item .pm{margin-left:auto;font-size:11.5px;color:#6c877c;text-align:right}
+.ph-item.missed .pn{color:#ff5d7e}
+.dialpad{display:grid;grid-template-columns:repeat(3,1fr);gap:12px 20px;padding:10px 26px}
+.dbtn{height:54px;border-radius:50%;border:none;background:#1b2422;color:#eafff5;font-size:23px;cursor:pointer;font-family:inherit}
+.dbtn:active{background:#2a3a35}
+.dbtn small{display:block;font-size:9px;color:#6c877c;letter-spacing:1px}
+.dial-num{text-align:center;font-size:28px;letter-spacing:2px;min-height:44px;padding:8px 20px;word-break:break-all}
+.callbtn{width:64px;height:64px;border-radius:50%;background:linear-gradient(160deg,#57e88a,#12b34b);border:none;font-size:26px;
+  margin:4px auto;display:block;cursor:pointer}
+#callOverlay{position:absolute;inset:0;z-index:150;background:linear-gradient(#101815,#050807);display:none;
+  flex-direction:column;align-items:center;justify-content:center;gap:10px}
+#callOverlay.on{display:flex}
+#callOverlay .cava{width:88px;height:88px;border-radius:50%;background:#243230;display:flex;align-items:center;justify-content:center;font-size:38px}
+#callOverlay .cname{font-size:22px;font-weight:600;margin-top:8px}
+#callOverlay .cstat{font-size:13px;color:#8aa89b}
+
+/* ========== 设置 ========== */
+.st-group{background:#171f1c;border-radius:14px;margin-bottom:12px;overflow:hidden}
+.st-item{display:flex;align-items:center;gap:12px;padding:13px 15px;border-bottom:1px solid rgba(255,255,255,.05);cursor:pointer}
+.st-item:last-child{border-bottom:none}
+.st-item:active{background:rgba(255,255,255,.04)}
+.st-ic{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex:none;background:#22302a}
+.st-label{flex:1;font-size:14.5px}
+.st-val{font-size:12.5px;color:#7d8a84}
+.sw{width:44px;height:25px;border-radius:13px;background:#3a4640;position:relative;transition:.2s;flex:none}
+.sw.on{background:#3fe8a0}
+.sw:after{content:"";position:absolute;top:3px;left:3px;width:19px;height:19px;border-radius:50%;background:#fff;transition:.2s}
+.sw.on:after{transform:translateX(19px)}
+.st-title{font-size:12px;color:#7d8a84;margin:16px 4px 8px}
+
+/* ========== 浏览器 ========== */
+.br-bar{display:flex;gap:8px;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.07)}
+.br-input{flex:1;background:#1b2422;border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:9px 14px;color:#fff;
+  font-size:14px;outline:none}
+.br-go{background:#2f8cf5;border:none;color:#fff;border-radius:18px;padding:0 16px;font-size:13px;cursor:pointer;font-family:inherit}
+.br-hist{display:flex;gap:11px;align-items:center;padding:12px 15px;border-bottom:1px solid rgba(255,255,255,.05);cursor:pointer}
+.br-hist .hi{font-size:15px;color:#6c877c}
+.br-hist .ht{flex:1;font-size:14px}
+.br-hist .hd{font-size:11px;color:#5c6862}
+.br-doc{font-size:14.5px;line-height:1.95;color:#d9efe5;white-space:pre-wrap}
+.br-doc h3{font-size:16px;margin:14px 0 8px;color:#baffdf}
+
+/* ========== 时钟 / 天气 ========== */
+.clk-big{text-align:center;font-size:64px;font-weight:200;letter-spacing:2px;padding:18px 0 4px}
+.clk-sub{text-align:center;font-size:12px;color:#7d8a84;margin-bottom:18px}
+.alarm{display:flex;align-items:center;gap:10px;background:#171f1c;border-radius:14px;padding:14px 16px;margin-bottom:10px}
+.alarm .at{font-size:26px;font-weight:300}
+.alarm .al{font-size:12px;color:#7d8a84;margin-top:2px}
+.wth-card{background:linear-gradient(160deg,#20343f,#131b21);border-radius:18px;padding:16px 18px;margin-bottom:12px}
+.wth-top{display:flex;justify-content:space-between;align-items:flex-start}
+.wth-city{font-size:15px;font-weight:600}
+.wth-cond{font-size:12px;color:#93a8b3;margin-top:4px}
+.wth-temp{font-size:40px;font-weight:200}
+.wth-meta{display:flex;gap:18px;margin-top:12px;font-size:11.5px;color:#8fa3ad}
 </style>
 </head>
 <body>
 <div id="stage">
   <div id="phone">
 
-    <!-- 开机动画 -->
+    <!-- 开机动画 · 华为 -->
     <div id="boot">
-      <div class="boot-inner">
-        <div id="rays"></div>
-        <div class="panel left"><div class="p19">19</div><div class="pline"></div><div class="pdot"></div></div>
-        <div class="panel right"><div class="p19">09</div><div class="pline"></div><div class="pdot"></div></div>
-        <div id="gem">
-          <div class="gemGlow"></div>
-          <svg viewBox="0 0 100 92" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="30,6 70,6 92,34 50,88 8,34" fill="#0e7d59"/>
-            <polygon points="30,6 50,6 50,34 8,34" fill="#49e6a8"/>
-            <polygon points="50,6 70,6 92,34 50,34" fill="#2cc98d"/>
-            <polygon points="8,34 50,34 50,88" fill="#14a06f"/>
-            <polygon points="50,34 92,34 50,88" fill="#0c7d53"/>
-            <polygon points="36,6 64,6 78,22 22,22" fill="#7cf7c8" opacity=".85"/>
-            <polyline points="8,34 92,34" stroke="#b9ffe4" stroke-width=".8" opacity=".5" fill="none"/>
-            <polyline points="30,6 50,34 70,6" stroke="#b9ffe4" stroke-width=".8" opacity=".45" fill="none"/>
-            <polyline points="50,34 50,88" stroke="#b9ffe4" stroke-width=".8" opacity=".4" fill="none"/>
-            <polyline points="8,34 50,88 92,34" stroke="#b9ffe4" stroke-width=".8" opacity=".35" fill="none"/>
-          </svg>
+      <div class="hw-pack">
+        <div class="hw-logo">HUAWEI</div>
+        <div class="hw-os">HarmonyOS</div>
+        <div class="boot-count">
+          <span id="bootLead">今天距离张泽禹的生日</span>
+          <b id="bootDays">—</b>
+          <span id="bootDateLbl">2027年4月30日 · 还有这些天</span>
         </div>
       </div>
-      <div id="bootHint">泽禹，生日快乐</div>
+      <div class="boot-bar"><i></i></div>
     </div>
 
     <div class="flash" id="flash"></div>
@@ -339,20 +516,29 @@ body{
         <div class="batt"><i></i></div>
       </div>
     </div>
+    <div id="notch"></div>
 
-    <!-- 锁屏 -->
+    <!-- 锁屏 · 密码 -->
     <div id="lock">
       <div class="dim"></div>
+      <button id="lockLang">🌐 <span id="lockLangCode">简体</span></button>
       <div class="lock-time" id="lkTime">9:41</div>
       <div class="lock-date" id="lkDate">10月15日 星期四</div>
+      <div class="lk-count" id="lkCount">距离泽禹的生日 2027.04.30 还有 — 天</div>
+      <div class="lk-weather" id="lkWeather">哈尔滨 --° · 北京 --°</div>
       <div class="lock-noti" id="lockNoti">
         <div class="ava">💗</div>
         <div style="flex:1;min-width:0">
-          <div class="nt">妈妈 <span>现在</span></div>
-          <div class="nb">大禹二十岁生日快乐！今天是你的生日，妈妈爸爸在家里等着你～</div>
+          <div class="nt"><b id="notiName">妈妈</b> <span id="notiNow">现在</span></div>
+          <div class="nb" id="notiText">大宇生日快乐！妈妈给你发了消息，醒来记得看。</div>
         </div>
       </div>
-      <div class="lock-hint">▲ 上滑解锁</div>
+      <div class="lock-kpad">
+        <div class="lk-pwtitle" id="lkPwTitle">输入锁屏密码</div>
+        <div class="lk-dots" id="lkDots"></div>
+        <div class="kpad" id="kpad"></div>
+        <button class="lk-forgot" id="lkForgot">忘记密码？</button>
+      </div>
     </div>
 
     <!-- 桌面 -->
@@ -361,19 +547,25 @@ body{
       <div class="widget">
         <div class="we">🎂</div>
         <div>
-          <div class="wt">今天 · 大禹的二十岁生日</div>
+          <div class="wt" id="widgetTitle">距离泽禹的生日，还有 — 天</div>
           <div class="ws" id="widgetDate">10月15日 · 有人惦记着，就是好事</div>
         </div>
       </div>
       <div id="appgrid">
-        <div class="appicon" data-app="msg"><div class="tile t-msg">💬<span class="badge">1</span></div><div class="name">信息</div></div>
-        <div class="appicon" data-app="memo"><div class="tile t-memo">📝</div><div class="name">备忘录</div></div>
-        <div class="appicon" data-app="weibo"><div class="tile t-weibo">微</div><div class="name">微博</div></div>
-        <div class="appicon" data-app="files"><div class="tile t-files">📁</div><div class="name">文件</div></div>
-        <div class="appicon" data-app="rec"><div class="tile t-rec">🎙️</div><div class="name">录音</div></div>
-        <div class="appicon" data-app="sticker"><div class="tile t-pic">📷</div><div class="name">大头贴</div></div>
-        <div class="appicon" data-app="watch"><div class="tile t-watch">⌚</div><div class="name">小红手表</div></div>
-        <div class="appicon" data-app="essay"><div class="tile t-essay">💌</div><div class="name">小作文</div></div>
+        <div class="appicon" data-app="wechat"><div class="tile t-wx"><span class="glyph">💬</span><span class="badge">1</span></div><div class="name">微信</div></div>
+        <div class="appicon" data-app="msg"><div class="tile t-msg"><span class="glyph">✉️</span><span class="badge">1</span></div><div class="name">信息</div></div>
+        <div class="appicon" data-app="tel"><div class="tile t-tel"><span class="glyph">📞</span></div><div class="name">电话</div></div>
+        <div class="appicon" data-app="browser"><div class="tile t-browser"><span class="glyph">🌐</span></div><div class="name">浏览器</div></div>
+        <div class="appicon" data-app="weibo"><div class="tile t-weibo"><span class="glyph" style="font-size:22px;font-weight:700;color:#fff">微</span></div><div class="name">微博</div></div>
+        <div class="appicon" data-app="watch"><div class="tile t-watch"><span class="glyph">⌚</span></div><div class="name">小红手表</div></div>
+        <div class="appicon" data-app="essay"><div class="tile t-essay"><span class="glyph">💌</span></div><div class="name">手写信</div></div>
+        <div class="appicon" data-app="settings"><div class="tile t-set"><span class="glyph">⚙️</span></div><div class="name">设置</div></div>
+        <div class="appicon" data-app="weather"><div class="tile t-weather"><span class="glyph">⛅</span></div><div class="name">天气</div></div>
+        <div class="appicon" data-app="clock"><div class="tile t-clock"><span class="glyph">🕕</span></div><div class="name">时钟</div></div>
+        <div class="appicon" data-app="memo"><div class="tile t-memo"><span class="glyph">📝</span></div><div class="name">备忘录</div></div>
+        <div class="appicon" data-app="files"><div class="tile t-files"><span class="glyph">📁</span></div><div class="name">文件</div></div>
+        <div class="appicon" data-app="sticker"><div class="tile t-pic"><span class="glyph">📷</span></div><div class="name">大头贴</div></div>
+        <div class="appicon" data-app="rec"><div class="tile t-rec"><span class="glyph">🎙️</span></div><div class="name">录音</div></div>
       </div>
     </div>
 
@@ -387,6 +579,7 @@ body{
           <div class="typing" id="typing" style="display:none"></div>
         </div>
       </div>
+      <div id="quickRow" style="display:none"></div>
       <div id="msgInputRow" style="display:none">
         <input id="msgInput" placeholder="发消息…" maxlength="80">
         <button id="msgSend">发送</button>
@@ -431,8 +624,56 @@ body{
 
     <!-- 小作文 -->
     <div class="app essay-body" id="app-essay">
-      <div class="app-head"><button class="back" data-close="1">‹</button><div class="app-title">小作文 · 好朋友们</div></div>
+      <div class="app-head"><button class="back" data-close="1">‹</button><div class="app-title">手写信 · 好朋友们</div></div>
       <div class="app-body paper" id="essayBody"></div>
+    </div>
+
+    <!-- 微信 -->
+    <div class="app" id="app-wechat">
+      <div class="app-head"><button class="back" id="wxBack">‹</button><div class="app-title" id="wxTitle">微信</div></div>
+      <div class="app-body" id="wxBody" style="padding:0"></div>
+      <div class="wx-tabs" id="wxTabs">
+        <div class="wx-tab on" data-tab="chat"><span class="ti">💬</span>微信</div>
+        <div class="wx-tab" data-tab="contact"><span class="ti">👥</span>通讯录</div>
+        <div class="wx-tab" data-tab="find"><span class="ti">🧭</span>发现</div>
+        <div class="wx-tab" data-tab="me"><span class="ti">🙂</span>我</div>
+      </div>
+    </div>
+
+    <!-- 电话 -->
+    <div class="app" id="app-tel">
+      <div class="app-head"><button class="back" data-close="1">‹</button><div class="app-title">电话</div></div>
+      <div class="ph-tabs" id="phTabs">
+        <div class="ph-tab on" data-ptab="log">通话记录</div>
+        <div class="ph-tab" data-ptab="dial">拨号</div>
+        <div class="ph-tab" data-ptab="contact">联系人</div>
+      </div>
+      <div class="app-body" id="telBody" style="padding:0"></div>
+    </div>
+
+    <!-- 设置 -->
+    <div class="app" id="app-settings">
+      <div class="app-head"><button class="back" data-close="1">‹</button><div class="app-title">设置</div></div>
+      <div class="app-body" id="settingsBody"></div>
+    </div>
+
+    <!-- 浏览器 -->
+    <div class="app" id="app-browser">
+      <div class="app-head"><button class="back" data-close="1">‹</button><div class="app-title">浏览器</div></div>
+      <div class="br-bar"><input class="br-input" id="brInput" placeholder="搜索或输入网址"><button class="br-go" id="brGo">搜索</button></div>
+      <div class="app-body" id="brBody" style="padding:0"></div>
+    </div>
+
+    <!-- 时钟 -->
+    <div class="app" id="app-clock">
+      <div class="app-head"><button class="back" data-close="1">‹</button><div class="app-title">时钟</div></div>
+      <div class="app-body" id="clockBody"></div>
+    </div>
+
+    <!-- 天气 -->
+    <div class="app" id="app-weather">
+      <div class="app-head"><button class="back" data-close="1">‹</button><div class="app-title">天气</div></div>
+      <div class="app-body" id="weatherBody"></div>
     </div>
 
     <!-- 查看器 -->
@@ -443,6 +684,14 @@ body{
     </div>
 
     <div id="toast"></div>
+
+    <!-- 通话界面 -->
+    <div id="callOverlay">
+      <div class="cava" id="callAva">📞</div>
+      <div class="cname" id="callName">妈妈</div>
+      <div class="cstat" id="callStat">正在呼叫…</div>
+      <button class="callbtn" id="callEnd" style="background:linear-gradient(160deg,#ff6b6b,#d31f1f);color:#fff">✕</button>
+    </div>
   </div>
 </div>
 
@@ -541,11 +790,337 @@ const ESSAY = `你们把这个手机翻完了吧？我猜你们第一个点开�
 
 泽禹`;
 
-/* 妈妈的信息 */
-const MOM_MSGS = [
-  "大禹二十岁生日快乐！",
-  "今天是你的生日，妈妈爸爸在家里等着你。",
-  "今年都20了，妈妈还觉着你是那个小宝宝呢。\n不管多少岁，大禹都是妈妈的宝贝。"
+/* ================= 生日倒计时 ================= */
+const BIRTHDAY = new Date(2027, 3, 30);
+function daysLeft(){
+  const n = new Date();
+  const a = Date.UTC(BIRTHDAY.getFullYear(), BIRTHDAY.getMonth(), BIRTHDAY.getDate());
+  const b = Date.UTC(n.getFullYear(), n.getMonth(), n.getDate());
+  return Math.max(0, Math.round((a - b) / 86400000));
+}
+function paintCountdown(){
+  const d = daysLeft();
+  const t = I18N[LANG] || I18N.zh;
+  const b = document.getElementById("bootDays");
+  if(b) b.textContent = d + " " + t.dayUnit;
+  const lc = document.getElementById("lkCount");
+  if(lc) lc.textContent = d===0 ? t.birthToday : t.countTpl.replace("{d}", d);
+  const wt = document.getElementById("widgetTitle");
+  if(wt) wt.textContent = d===0 ? t.widgetBirth : t.widgetTpl.replace("{d}", d);
+}
+
+/* ================= 多语言 ================= */
+const LANGS = [
+  {k:"zh",   name:"简体中文",           flag:"🇨🇳", code:"简体"},
+  {k:"en",   name:"English",            flag:"🇬🇧", code:"EN"},
+  {k:"ja",   name:"日本語",              flag:"🇯🇵", code:"日本語"},
+  {k:"ko",   name:"한국어",              flag:"🇰🇷", code:"한국어"},
+  {k:"zhhk", name:"繁體中文（香港）",     flag:"🇭🇰", code:"繁中"},
+  {k:"it",   name:"Italiano",           flag:"🇮🇹", code:"IT"},
+  {k:"th",   name:"ไทย",                flag:"🇹🇭", code:"ไทย"}
+];
+const LOCALES = {zh:"zh-CN",en:"en-US",ja:"ja-JP",ko:"ko-KR",zhhk:"zh-HK",it:"it-IT",th:"th-TH"};
+const I18N = {
+  zh:{
+    bootLead:"今天距离张泽禹的生日", bootDateLbl:"2027年4月30日 · 还有这些天", dayUnit:"天",
+    countTpl:"距离泽禹的生日 2027.04.30 还有 {d} 天", birthToday:"今天就是泽禹的生日 · 2027.04.30 🎂",
+    widgetTpl:"距离泽禹的生日，还有 {d} 天", widgetBirth:"今天 · 泽禹的生日 🎂",
+    widgetSub:"有人惦记着，就是好事",
+    pwTitle:"输入锁屏密码", forgot:"忘记密码？", badPwd:"密码不对，再想想～",
+    hintPwd:"提示：密码是泽禹的生日，年(两位)月日", notiFirstUnlock:"先输入锁屏密码",
+    notiName:"妈妈", notiNow:"现在", notiText:"大宇生日快乐！妈妈给你发了消息，醒来记得看。",
+    langTitle:"语言 / Language", close:"关闭", langLabel:"语言", closeCall:"通话已结束",
+    offline:"离线数据", hum:"湿度", wind:"风速", daily:"每天自动更新 · 哈尔滨 / 北京",
+    cities:{harbin:"哈尔滨",beijing:"北京"},
+    apps:{wechat:"微信",msg:"信息",tel:"电话",browser:"浏览器",weibo:"微博",watch:"小红手表",essay:"手写信",settings:"设置",weather:"天气",clock:"时钟",memo:"备忘录",files:"文件",sticker:"大头贴",rec:"录音"}
+  },
+  en:{
+    bootLead:"Days until Zhang Zeyu's birthday", bootDateLbl:"April 30, 2027 · days remaining", dayUnit:"days",
+    countTpl:"{d} days until Zeyu's birthday · 2027.04.30", birthToday:"Today is Zeyu's birthday · 2027.04.30 🎂",
+    widgetTpl:"Days until Zeyu's birthday: {d}", widgetBirth:"Today · Zeyu's birthday 🎂",
+    widgetSub:"Someone is thinking of you",
+    pwTitle:"Enter passcode", forgot:"Forgot passcode?", badPwd:"Wrong passcode, try again",
+    hintPwd:"Hint: Zeyu's birthday (YY MM DD)", notiFirstUnlock:"Enter your passcode first",
+    notiName:"Mum", notiNow:"now", notiText:"Happy birthday! Mum sent you a message — read it when you wake up.",
+    langTitle:"Language", close:"Close", langLabel:"Language", closeCall:"Call ended",
+    offline:"offline data", hum:"Humidity", wind:"Wind", daily:"Updates daily · Harbin / Beijing",
+    cities:{harbin:"Harbin",beijing:"Beijing"},
+    apps:{wechat:"WeChat",msg:"Messages",tel:"Phone",browser:"Browser",weibo:"Weibo",watch:"Watch",essay:"Letter",settings:"Settings",weather:"Weather",clock:"Clock",memo:"Notes",files:"Files",sticker:"Photo Booth",rec:"Recorder"}
+  },
+  ja:{
+    bootLead:"張澤禹の誕生日まで", bootDateLbl:"2027年4月30日 · 残り", dayUnit:"日",
+    countTpl:"澤禹の誕生日 2027.04.30 まであと {d} 日", birthToday:"今日は澤禹の誕生日 · 2027.04.30 🎂",
+    widgetTpl:"澤禹の誕生日まで {d} 日", widgetBirth:"今日 · 澤禹の誕生日 🎂",
+    widgetSub:"誰かが想ってくれている",
+    pwTitle:"パスコードを入力", forgot:"パスコードを忘れた", badPwd:"パスコードが違います",
+    hintPwd:"ヒント：澤禹の誕生日（年下2桁・月・日）", notiFirstUnlock:"先にパスコードを入力してね",
+    notiName:"ママ", notiNow:"今", notiText:"お誕生日おめでとう！ママからメッセージが届いてるよ。",
+    langTitle:"言語 / Language", close:"閉じる", langLabel:"言語", closeCall:"通話終了",
+    offline:"オフラインデータ", hum:"湿度", wind:"風速", daily:"毎日更新 · ハルビン / 北京",
+    cities:{harbin:"ハルビン",beijing:"北京"},
+    apps:{wechat:"WeChat",msg:"メッセージ",tel:"電話",browser:"ブラウザ",weibo:"Weibo",watch:"ウォッチ",essay:"手紙",settings:"設定",weather:"天気",clock:"時計",memo:"メモ",files:"ファイル",sticker:"プリクラ",rec:"ボイスメモ"}
+  },
+  ko:{
+    bootLead:"장쩌위의 생일까지", bootDateLbl:"2027년 4월 30일 · 남은 날", dayUnit:"일",
+    countTpl:"쩌위의 생일 2027.04.30까지 {d}일", birthToday:"오늘은 쩌위의 생일 · 2027.04.30 🎂",
+    widgetTpl:"쩌위의 생일까지 {d}일", widgetBirth:"오늘 · 쩌위의 생일 🎂",
+    widgetSub:"누군가 너를 생각하고 있어",
+    pwTitle:"잠금 암호 입력", forgot:"암호를 잊으셨나요?", badPwd:"암호가 틀렸어요",
+    hintPwd:"힌트: 쩌위의 생일 (연도 2자리·월·일)", notiFirstUnlock:"먼저 암호를 입력해 주세요",
+    notiName:"엄마", notiNow:"지금", notiText:"생일 축하해! 엄마가 메시지를 보냈어, 일어나면 확인해.",
+    langTitle:"언어 / Language", close:"닫기", langLabel:"언어", closeCall:"통화 종료",
+    offline:"오프라인 데이터", hum:"습도", wind:"풍속", daily:"매일 업데이트 · 하얼빈 / 베이징",
+    cities:{harbin:"하얼빈",beijing:"베이징"},
+    apps:{wechat:"위챗",msg:"메시지",tel:"전화",browser:"브라우저",weibo:"웨이보",watch:"워치",essay:"편지",settings:"설정",weather:"날씨",clock:"시계",memo:"메모",files:"파일",sticker:"사진관",rec:"녹음"}
+  },
+  zhhk:{
+    bootLead:"今日距離張澤禹嘅生日", bootDateLbl:"2027年4月30日 · 仲有咁多日", dayUnit:"日",
+    countTpl:"距離澤禹嘅生日 2027.04.30 仲有 {d} 日", birthToday:"今日就係澤禹嘅生日 · 2027.04.30 🎂",
+    widgetTpl:"距離澤禹嘅生日，仲有 {d} 日", widgetBirth:"今日 · 澤禹嘅生日 🎂",
+    widgetSub:"有人記掛住你，就係好事",
+    pwTitle:"輸入鎖屏密碼", forgot:"忘記密碼？", badPwd:"密碼唔啱，再諗諗～",
+    hintPwd:"提示：密碼係澤禹嘅生日，年(兩位)月日", notiFirstUnlock:"先輸入鎖屏密碼",
+    notiName:"媽咪", notiNow:"而家", notiText:"大禹生日快樂！媽咪send咗訊息畀你，起身記得睇。",
+    langTitle:"語言 / Language", close:"關閉", langLabel:"語言", closeCall:"通話已結束",
+    offline:"離線資料", hum:"濕度", wind:"風速", daily:"每日自動更新 · 哈爾濱 / 北京",
+    cities:{harbin:"哈爾濱",beijing:"北京"},
+    apps:{wechat:"微信",msg:"訊息",tel:"電話",browser:"瀏覽器",weibo:"微博",watch:"手錶",essay:"手寫信",settings:"設定",weather:"天氣",clock:"時鐘",memo:"備忘錄",files:"檔案",sticker:"貼紙相",rec:"錄音"}
+  },
+  it:{
+    bootLead:"Giorni al compleanno di Zhang Zeyu", bootDateLbl:"30 aprile 2027 · giorni rimanenti", dayUnit:"giorni",
+    countTpl:"{d} giorni al compleanno di Zeyu · 30.04.2027", birthToday:"Oggi è il compleanno di Zeyu · 30.04.2027 🎂",
+    widgetTpl:"Giorni al compleanno di Zeyu: {d}", widgetBirth:"Oggi · Compleanno di Zeyu 🎂",
+    widgetSub:"Qualcuno pensa a te",
+    pwTitle:"Inserisci il codice", forgot:"Codice dimenticato?", badPwd:"Codice errato, riprova",
+    hintPwd:"Suggerimento: compleanno di Zeyu (AA MM GG)", notiFirstUnlock:"Inserisci prima il codice",
+    notiName:"Mamma", notiNow:"ora", notiText:"Buon compleanno! La mamma ti ha scritto, leggi quando ti svegli.",
+    langTitle:"Lingua / Language", close:"Chiudi", langLabel:"Lingua", closeCall:"Chiamata terminata",
+    offline:"dati offline", hum:"Umidità", wind:"Vento", daily:"Aggiornato ogni giorno · Harbin / Pechino",
+    cities:{harbin:"Harbin",beijing:"Pechino"},
+    apps:{wechat:"WeChat",msg:"Messaggi",tel:"Telefono",browser:"Browser",weibo:"Weibo",watch:"Orologio",essay:"Lettera",settings:"Impostazioni",weather:"Meteo",clock:"Sveglia",memo:"Note",files:"File",sticker:"Cabina foto",rec:"Registratore"}
+  },
+  th:{
+    bootLead:"เหลืออีกกี่วันถึงวันเกิดจางเจ๋ออวี่", bootDateLbl:"30 เมษายน 2027 · เหลืออีก", dayUnit:"วัน",
+    countTpl:"เหลืออีก {d} วันถึงวันเกิดเจ๋ออวี่ · 30.04.2027", birthToday:"วันนี้คือวันเกิดของเจ๋ออวี่ · 30.04.2027 🎂",
+    widgetTpl:"เหลืออีก {d} วันถึงวันเกิดเจ๋ออวี่", widgetBirth:"วันนี้ · วันเกิดเจ๋ออวี่ 🎂",
+    widgetSub:"มีคนคิดถึงอยู่",
+    pwTitle:"ใส่รหัสผ่าน", forgot:"ลืมรหัสผ่าน?", badPwd:"รหัสไม่ถูกต้อง",
+    hintPwd:"คำใบ้: วันเกิดของเจ๋ออวี่ (ปี 2 หลัก เดือน วัน)", notiFirstUnlock:"กรุณาใส่รหัสผ่านก่อน",
+    notiName:"แม่", notiNow:"ตอนนี้", notiText:"สุขสันต์วันเกิด! แม่ส่งข้อความมา ตื่นแล้วอ่านนะ",
+    langTitle:"ภาษา / Language", close:"ปิด", langLabel:"ภาษา", closeCall:"สิ้นสุดการโทร",
+    offline:"ข้อมูลออฟไลน์", hum:"ความชื้น", wind:"ลม", daily:"อัปเดตทุกวัน · ฮาร์บิน / ปักกิ่ง",
+    cities:{harbin:"ฮาร์บิน",beijing:"ปักกิ่ง"},
+    apps:{wechat:"WeChat",msg:"ข้อความ",tel:"โทรศัพท์",browser:"เบราว์เซอร์",weibo:"Weibo",watch:"นาฬิกา",essay:"จดหมาย",settings:"ตั้งค่า",weather:"อากาศ",clock:"นาฬิกา",memo:"บันทึก",files:"ไฟล์",sticker:"ตู้ถ่ายรูป",rec:"อัดเสียง"}
+  }
+};
+let LANG = "zh";
+try{ const sv = localStorage.getItem("zy_lang"); if(sv && I18N[sv]) LANG = sv; }catch(e){}
+function t(key){ const d = I18N[LANG] || I18N.zh; return (d[key]!==undefined) ? d[key] : I18N.zh[key]; }
+function fmtDateLocale(d){
+  try{ return d.toLocaleDateString(LOCALES[LANG]||"zh-CN", {month:"long", day:"numeric", weekday:"long"}); }
+  catch(e){ return fmtDate(d); }
+}
+function applyLang(k){
+  if(!I18N[k]) return;
+  LANG = k;
+  try{ localStorage.setItem("zy_lang", LANG); }catch(e){}
+  const set=(id,v)=>{ const el=document.getElementById(id); if(el) el.textContent=v; };
+  set("bootLead", t("bootLead")); set("bootDateLbl", t("bootDateLbl"));
+  set("lkPwTitle", t("pwTitle")); set("lkForgot", t("forgot"));
+  set("notiName", t("notiName")); set("notiNow", t("notiNow")); set("notiText", t("notiText"));
+  const lc = document.getElementById("lockLangCode");
+  if(lc){ const l = LANGS.filter(x=>x.k===LANG)[0]; lc.textContent = l?l.code:"简体"; }
+  document.querySelectorAll("#appgrid .appicon").forEach(ic=>{
+    const nm = ic.querySelector(".name"); const key = ic.dataset.app;
+    if(nm && t("apps")[key]) nm.textContent = t("apps")[key];
+  });
+  paintCountdown(); paintLockWeather();
+  const cur = document.getElementById("curLangName");
+  if(cur) cur.textContent = (LANGS.filter(x=>x.k===LANG)[0]||LANGS[0]).name;
+  try{ tick(); }catch(e){}
+}
+function openLangSheet(){
+  let sh = document.getElementById("langSheet");
+  if(!sh){
+    sh = document.createElement("div"); sh.id = "langSheet";
+    document.getElementById("phone").appendChild(sh);
+  }
+  sh.innerHTML='<div class="lang-wrap"><div class="lang-hd"></div><div class="lang-list"></div><button class="lang-close"></button></div>';
+  sh.querySelector(".lang-hd").textContent = t("langTitle");
+  sh.querySelector(".lang-close").textContent = t("close");
+  const list = sh.querySelector(".lang-list");
+  LANGS.forEach(l=>{
+    const o = document.createElement("div");
+    o.className = "lang-opt" + (l.k===LANG ? " on" : "");
+    o.innerHTML = '<span class="fg"></span><span class="nm"></span><span class="ck">✓</span>';
+    o.querySelector(".fg").textContent = l.flag;
+    o.querySelector(".nm").textContent = l.name;
+    if(l.k!==LANG) o.querySelector(".ck").style.visibility = "hidden";
+    o.onclick = ()=>{ applyLang(l.k); sh.classList.remove("on"); };
+    list.appendChild(o);
+  });
+  sh.querySelector(".lang-close").onclick = ()=>sh.classList.remove("on");
+  sh.onclick = e=>{ if(e.target===sh) sh.classList.remove("on"); };
+  sh.classList.add("on");
+}
+
+/* ================= 信息联系人（要改内容直接改这里） ================= */
+const CHATS = {
+  mom:{name:"妈妈",ava:"💗",time:"今天",unread:true,preview:"大宇生日快乐！",
+    script:["大宇生日快乐！🎂","妈妈一早把长寿面煮好了，你爸非说给你留个鸡腿。","二十岁啦，妈妈就盼你平平安安、开开心心的。"],
+    quick:["谢谢妈妈","我好想你"],
+    pool:["哎，跟妈妈还客气啥。","妈妈也想你，啥时候回家？","在外面照顾好自己，别老熬夜。","钱不够就说，别硬撑。"]},
+  dad:{name:"爸爸",ava:"👨",time:"今天",unread:false,preview:"生日快乐，臭小子。",
+    script:["生日快乐，臭小子。","钱够不够花？不够跟爸说。","在外面别硬撑，家里永远有你一口饭。"],
+    quick:["谢谢爸","知道了"],
+    pool:["嗯。","行了，早点睡。","有事给爸打电话。"]},
+  zzx:{name:"朱志鑫",ava:"🐷",time:"今天",unread:true,preview:"生日快乐兄弟",
+    script:["生日快乐兄弟","嗯嗯 谢了啊","我先去练了 回聊"],
+    quick:["谢谢","回头聊"],
+    pool:["嗯嗯","好","哈哈","在忙 回聊"]},
+  zh:{name:"左航",ava:"🛹",time:"今天",unread:false,preview:"生日快乐宝",
+    script:["生日快乐宝","收到啦","晚点聊"],
+    quick:["谢谢","嗯"],
+    pool:["嗯","收到","在排练"]},
+  zj:{name:"张极",ava:"🎤",time:"今天",unread:false,preview:"生日快乐 大禹",
+    script:["生日快乐 大禹","好","嗯"],
+    quick:["谢谢","嗯"],
+    pool:["嗯","好","哈哈"]},
+  sxh:{name:"苏新皓",ava:"🎧",time:"今天",unread:false,preview:"生日快乐！",
+    script:["生日快乐！","哈哈 好","先不聊了"],
+    quick:["谢谢","好"],
+    pool:["哈哈","好","嗯嗯"]},
+  friend:{name:"朋友",ava:"🧣",time:"今天",unread:true,preview:"哈尔滨下雪了",
+    script:["大宇！生日快乐！","哈尔滨今天下雪了，我在楼下给你堆了个雪人，叫大禹。","等你有空来哈尔滨，我带你吃锅包肉，我请客。"],
+    quick:["谢谢你","我也想你们"],
+    pool:["跟我还客气啥。","雪人化了我就再堆一个。","你啥时候来，我提前去接你。","这边冷，你来了我给你找件厚的。"]},
+  great:{name:"太爷爷",ava:"👴",time:"",unread:false,preview:"",script:[],quick:[],pool:[]}
+};
+function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
+function aiReply(k,t){
+  const c = CHATS[k]; if(!c || !c.pool || !c.pool.length) return null;
+  if(k==="mom"){
+    if(/谢谢|谢/.test(t)) return pick(["跟妈妈还客气啥呀。","傻孩子，跟妈说啥谢。","你开心妈妈就高兴。"]);
+    if(/想你|想妈|回家/.test(t)) return pick(["妈妈也想你，啥时候回来？","家里的门一直给你留着。","想回来就回来，妈给你做饭。"]);
+    if(/生日|蛋糕/.test(t)) return pick(["蛋糕妈妈给你留了一块，回来吃。","生日要开心呀 🎂"]);
+    if(/累|忙/.test(t)) return pick(["别太累了，身体要紧。","忙完就早点睡，妈不催你。"]);
+    if(/[?？]/.test(t)) return pick(["嗯？怎么啦儿子。","你说，妈听着呢。"]);
+    return pick(c.pool);
+  }
+  if(k==="dad"){
+    if(/谢谢|谢/.test(t)) return pick(["嗯，一家人不说这个。","行了，别跟爸客气。"]);
+    if(/想你|回家/.test(t)) return pick(["想回就回。","家里都挺好，你别惦记。"]);
+    return pick(c.pool);
+  }
+  if(k==="friend"){
+    if(/谢谢|谢/.test(t)) return pick(["跟我还客气啥。","客气啥呀，咱俩谁跟谁。"]);
+    if(/想/.test(t)) return pick(["我也想你啊，赶紧来哈尔滨。","想就来，我随时有空。"]);
+    if(/雪|冷/.test(t)) return pick(["这边零下十几度，你来了记得穿厚点。","雪挺大的，雪人已经堆好了。"]);
+    return pick(c.pool);
+  }
+  if(/[?？]/.test(t)) return pick(["啊？","啥","回头说"]);
+  return pick(c.pool);
+}
+
+/* ================= 微信 ================= */
+const WX_CHATS = {
+  staff:{name:"士大夫",ava:"📋",time:"昨天",unread:2,
+    msgs:[
+      {me:false,type:"note",text:"泽禹，跟你说个事：这个综艺你肯定上不了。因为团体为先，你要以团体为主，公司这边的安排你配合一下。"},
+      {me:true,text:"好的"}
+    ]},
+  family:{name:"大禹一家人",ava:"🏠",time:"今天",unread:1,
+    msgs:[
+      {me:false,n:"妈妈",text:"儿子生日快乐！妈妈给你发个红包，收一下。"},
+      {me:false,n:"爸爸",text:"生日快乐。"},
+      {me:true,text:"谢谢爸妈！"}
+    ],role:"family"},
+  team:{name:"TOP登陆少年",ava:"🎵",time:"今天",unread:0,
+    msgs:[
+      {me:false,n:"朱志鑫",text:"大禹生日快乐"},
+      {me:false,n:"左航",text:"生日快乐宝"},
+      {me:false,n:"张极",text:"生日快乐"},
+      {me:true,text:"谢谢兄弟们"}
+    ],role:"team"},
+  filehelper:{name:"文件传输助手",ava:"📁",time:"",unread:0,
+    msgs:[{me:true,text:"攀岩训练计划.docx"}]}
+};
+
+/* ================= 电话 ================= */
+const CALL_LOG = [
+  {name:"妈妈",ava:"💗",dir:"呼入",dur:"12:30",time:"今天 07:42",num:"138 0000 0001",ok:true,note:"家里问你今天怎么过生日"},
+  {name:"爸爸",ava:"👨",dir:"呼入",dur:"03:12",time:"今天 08:10",num:"138 0000 0002",ok:true,note:"让你别乱花钱"},
+  {name:"士大夫",ava:"📋",dir:"呼入",dur:"08:45",time:"昨天 21:15",num:"138 0000 0003",ok:true,note:"通知明天行程和练习安排"},
+  {name:"总裁",ava:"🕴️",dir:"呼入",dur:"01:20",time:"昨天 19:03",num:"138 0000 0004",ok:true,note:"重要消息，让你打回去"},
+  {name:"陌生号码",ava:"❓",dir:"未接",dur:"",time:"昨天 23:41",num:"+86 139 **** 0921",ok:false,note:"未接来电 · 无法回拨"}
+];
+const PHONE_BOOK = [
+  {name:"妈妈",ava:"💗",num:"138 0000 0001"},
+  {name:"爸爸",ava:"👨",num:"138 0000 0002"},
+  {name:"士大夫",ava:"📋",num:"138 0000 0003"},
+  {name:"总裁",ava:"🕴️",num:"138 0000 0004"},
+  {name:"朱志鑫",ava:"🐷",num:"138 0000 0005"},
+  {name:"左航",ava:"🛹",num:"138 0000 0006"},
+  {name:"张极",ava:"🎤",num:"138 0000 0007"},
+  {name:"苏新皓",ava:"🎧",num:"138 0000 0008"},
+  {name:"朋友",ava:"🧣",num:"138 0000 0009"}
+];
+
+/* ================= 浏览器记录 ================= */
+const BR_HIST = [
+  {q:"攀岩技巧",t:"今天 11:20",doc:
+"一、先学会落地\n攀岩最容易伤的不是手，是脚踝。落地时膝盖微屈，双脚同时着地，别单脚硬撑。\n\n二、三点固定\n移动时始终让两脚一手或两手一脚贴住岩点，身体贴墙，重心压在脚上，手臂只负责平衡。\n\n三、用腿发力\n新手最常见的问题是全靠手臂拉，几趟就力竭。腿是发动机，手只是方向盘。\n\n四、找休息点\n遇到好的大点就停下来，甩手、深呼吸，让手臂的血回流。\n\n五、别急着上难度\n先把 V2 以下的线路爬干净，比硬啃高难度有用得多。"},
+  {q:"新手怎么开始攀岩",t:"今天 11:26",doc:
+"1. 先去抱石馆，租一双鞋，别一上来就买装备。\n2. 第一次只爬最简单的线路，重点是熟悉落地和重心。\n3. 每次练 40 分钟就够，手指韧带恢复慢，别天天爬。\n4. 一定要热身：手腕、手指、肩。\n5. 找个会看动作的人帮你拍视频，比闷头爬进步快。"},
+  {q:"怎么和别人处好关系",t:"昨天 22:05",doc:
+"1. 记住别人的名字，和他提过的小事。下次见面提一句，比十句客套都有用。\n2. 不抢话，等对方说完，停半秒再接。\n3. 少评价，多问一句“后来呢”。\n4. 帮忙要具体。“有需要跟我说”不如“这个我帮你弄”。\n5. 不擅长热闹也没关系，稳定比热情重要。"},
+  {q:"人际关系怎么处理",t:"昨天 22:31",doc:
+"先分清三件事：他是无意的、他只是习惯这样、他就是不在意你。\n第一种直接说；第二种保持距离；第三种不用解释，慢慢退出去就好。\n\n在团队里只有一条：把事做好，别把情绪带进工作。\n有分歧就事论事，别翻旧账。\n\n累的时候允许自己不说话，但别把沉默变成冷处理。"}
+];
+
+/* ================= 天气 ================= */
+const WX_CODES = {0:"晴",1:"多云",2:"多云",3:"阴",45:"有雾",48:"有雾",51:"小雨",53:"小雨",55:"中雨",61:"小雨",63:"中雨",65:"大雨",71:"小雪",73:"中雪",75:"大雪",77:"雪",80:"阵雨",81:"阵雨",82:"强阵雨",85:"阵雪",86:"阵雪",95:"雷阵雨",96:"雷阵雨",99:"雷阵雨"};
+const WEATHER_CITIES = [
+  {k:"harbin",name:"哈尔滨",lat:45.75,lon:126.65},
+  {k:"beijing",name:"北京",lat:39.90,lon:116.40}
+];
+let WEATHER_DATA = null;
+function paintLockWeather(){
+  const el = document.getElementById("lkWeather"); if(!el || !WEATHER_DATA) return;
+  const cn = t("cities") || {};
+  const h = WEATHER_DATA.harbin, b = WEATHER_DATA.beijing;
+  el.textContent = (h ? (cn.harbin||h.name)+" "+h.temp+"° "+h.cond : "") + "　·　" + (b ? (cn.beijing||b.name)+" "+b.temp+"° "+b.cond : "");
+}
+async function loadWeather(force){
+  const today = new Date().toISOString().slice(0,10);
+  const ck = "zy_weather_" + today;
+  if(!force){
+    try{ const raw = localStorage.getItem(ck); if(raw){ WEATHER_DATA = JSON.parse(raw); paintLockWeather(); return WEATHER_DATA; } }catch(e){}
+  }
+  const out = {};
+  await Promise.all(WEATHER_CITIES.map(async c=>{
+    try{
+      const u = "https://api.open-meteo.com/v1/forecast?latitude="+c.lat+"&longitude="+c.lon+
+        "&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&timezone=Asia%2FShanghai";
+      const r = await fetch(u, {cache:"no-store"});
+      const j = await r.json(); const cur = j.current || {};
+      out[c.k] = {name:c.name,temp:Math.round(cur.temperature_2m),
+        cond:WX_CODES[cur.weather_code]||"多云",hum:cur.relative_humidity_2m,
+        wind:Math.round(cur.wind_speed_10m),ok:true};
+    }catch(e){
+      out[c.k] = {name:c.name,temp:c.k==="harbin"?-6:9,cond:c.k==="harbin"?"小雪":"晴",hum:62,wind:12,ok:false};
+    }
+  }));
+  WEATHER_DATA = out;
+  try{ localStorage.setItem(ck, JSON.stringify(out)); }catch(e){}
+  paintLockWeather();
+  return out;
+}
+
+/* ================= 闹钟 ================= */
+const ALARMS = [
+  {t:"05:00",label:"起床 · 早功",on:true},
+  {t:"06:00",label:"练舞 · 体能",on:true}
 ];
 
 /* ================= 工具 ================= */
@@ -559,68 +1134,87 @@ function fmtTime(d){ return d.getHours()+":"+String(d.getMinutes()).padStart(2,"
 function fmtDate(d){ const w="日一二三四五六"[d.getDay()]; return (d.getMonth()+1)+"月"+d.getDate()+"日 星期"+w; }
 function tick(){ const d=new Date();
   $("#sbTime").textContent=fmtTime(d); $("#lkTime").textContent=fmtTime(d);
-  $("#lkDate").textContent=fmtDate(d); $("#widgetDate").textContent=fmtDate(d)+" · 有人惦记着，就是好事"; }
+  $("#lkDate").textContent=fmtDateLocale(d);
+  $("#widgetDate").textContent=fmtDateLocale(d)+" · "+t("widgetSub"); }
 tick(); setInterval(tick,20000);
 
-/* ================= 开机动画 ================= */
+/* ================= 开机 ================= */
 let booted=false;
 function bootOpen(){
   if(booted) return; booted=true;
   try{ chime(); }catch(e){}
-  $("#boot").classList.add("open");
-  for(let i=0;i<16;i++){
-    const s=document.createElement("div"); s.className="sparkle";
-    const a=Math.random()*Math.PI*2, r=90+Math.random()*160;
-    s.style.setProperty("--dx",Math.cos(a)*r+"px"); s.style.setProperty("--dy",Math.sin(a)*r+"px");
-    s.style.animationDelay=(Math.random()*.35)+"s";
-    $(".boot-inner").appendChild(s);
-  }
-  setTimeout(()=>{
-    $("#flash").classList.add("on");
-    $("#boot").classList.add("hide");
-    setTimeout(()=>{ $("#flash").classList.remove("on"); },320);
-    setTimeout(()=>$("#boot").remove(),900);
-  },1050);
+  $("#flash").classList.add("on");
+  $("#boot").classList.add("hide");
+  setTimeout(()=>{ $("#flash").classList.remove("on"); },320);
+  setTimeout(()=>{ const b=$("#boot"); if(b) b.remove(); },900);
 }
-$("#gem").addEventListener("click",bootOpen);
-$("#boot").addEventListener("click",e=>{ if(e.target.id==="boot"||e.target.id==="bootHint") bootOpen(); });
-setTimeout(()=>{ if(!booted) bootOpen(); },1050);
+$("#boot").addEventListener("click",bootOpen);
+setTimeout(()=>{ if(!booted) bootOpen(); },4300);
 
 /* 开机音效 */
 function chime(){
-  const ac=new (window.AudioContext||window.webkitAudioContext)();
-  const play=(f,t0,dur)=>{ const o=ac.createOscillator(),g=ac.createGain();
-    o.type="sine"; o.frequency.value=f; o.connect(g); g.connect(ac.destination);
-    g.gain.setValueAtTime(0,t0); g.gain.linearRampToValueAtTime(.16,t0+.02);
-    g.gain.exponentialRampToValueAtTime(.001,t0+dur);
-    o.start(t0); o.stop(t0+dur); };
-  const t=ac.currentTime; play(659.25,t,.5); play(987.77,t+.14,.8);
+  try{
+    const ac=new (window.AudioContext||window.webkitAudioContext)();
+    const play=(f,t0,dur)=>{ const o=ac.createOscillator(),g=ac.createGain();
+      o.type="sine"; o.frequency.value=f; o.connect(g); g.connect(ac.destination);
+      g.gain.setValueAtTime(0,t0); g.gain.linearRampToValueAtTime(.16,t0+.02);
+      g.gain.exponentialRampToValueAtTime(.001,t0+dur);
+      o.start(t0); o.stop(t0+dur); };
+    const t=ac.currentTime; play(659.25,t,.5); play(987.77,t+.14,.8);
+  }catch(e){}
 }
 
-/* ================= 锁屏手势 ================= */
-const lockEl=$("#lock"); let lkStart=null;
-lockEl.addEventListener("pointerdown",e=>{ lkStart={y:e.clientY,id:e.pointerId}; lockEl.style.transition="none"; try{ lockEl.setPointerCapture(e.pointerId); }catch(_){} });
-lockEl.addEventListener("pointermove",e=>{
-  if(!lkStart||e.pointerId!==lkStart.id) return;
-  const dy=Math.min(0,e.clientY-lkStart.y);
-  lockEl.style.transform="translateY("+dy*0.55+"px)";
-});
-lockEl.addEventListener("pointerup",e=>{
-  if(!lkStart) return;
-  const dy=e.clientY-lkStart.y; lockEl.style.transition="";
-  if(dy<-110){ unlock(); } else { lockEl.style.transform=""; }
-  lkStart=null;
-});
-lockEl.addEventListener("pointercancel",()=>{ lockEl.style.transition=""; lockEl.style.transform=""; lkStart=null; });
-lockEl.addEventListener("touchmove",e=>{ e.preventDefault(); }, {passive:false});
-let unlocked=false;
-function unlock(openMsg){
-  if(unlocked) return; unlocked=true;
-  lockEl.classList.add("unlocked");
-  $("#home").classList.add("on");
-  if(openMsg) setTimeout(()=>openApp("msg"),450);
+/* ================= 锁屏：密码解锁 ================= */
+const lockEl=$("#lock");
+const PWD_DEFAULT="070430";
+function getPwd(){ try{ return localStorage.getItem("zy_pwd")||PWD_DEFAULT; }catch(e){ return PWD_DEFAULT; } }
+let lkBuf="";
+function renderDots(){
+  const box=$("#lkDots"); if(!box) return;
+  box.innerHTML="";
+  for(let i=0;i<6;i++){
+    const d=document.createElement("div"); d.className="lk-dot"+(i<lkBuf.length?" on":"");
+    box.appendChild(d);
+  }
 }
-$("#lockNoti").addEventListener("click",e=>{ e.stopPropagation(); unlock(true); });
+function checkPwd(){
+  if(lkBuf===getPwd()){
+    lockEl.classList.add("unlocked");
+    setTimeout(()=>{ unlock(); },320);
+  }else{
+    lockEl.classList.add("bad");
+    try{ if(navigator.vibrate) navigator.vibrate(60); }catch(e){}
+    setTimeout(()=>{ lockEl.classList.remove("bad"); lkBuf=""; renderDots(); },430);
+    toast("密码不对，再想想～");
+  }
+}
+function addDigit(n){
+  if(lkBuf.length>=6) return;
+  lkBuf+=n; renderDots();
+  if(lkBuf.length===6) setTimeout(checkPwd,140);
+}
+function delDigit(){ lkBuf=lkBuf.slice(0,-1); renderDots(); }
+(function buildKeypad(){
+  const kp=$("#kpad"); if(!kp) return;
+  const keys=["1","2","3","4","5","6","7","8","9","","0","⌫"];
+  kp.innerHTML="";
+  keys.forEach(k=>{
+    const b=document.createElement("button");
+    b.className="kbtn";
+    if(!k){ b.classList.add("ghost"); b.disabled=true; }
+    else if(k==="⌫"){ b.classList.add("del"); b.textContent="⌫"; b.onclick=delDigit; }
+    else { b.textContent=k; b.onclick=()=>addDigit(k); }
+    kp.appendChild(b);
+  });
+  renderDots();
+})();
+let unlocked=false;
+function unlock(){
+  if(unlocked) return; unlocked=true;
+  $("#home").classList.add("on");
+}
+$("#lockNoti").addEventListener("click",e=>{ e.stopPropagation(); toast("先输入锁屏密码"); });
+$("#lkForgot").onclick=()=>toast("提示：密码是泽禹的生日，年(两位)月日");
 
 /* ================= App 框架 ================= */
 const cleanups=[];
@@ -654,13 +1248,14 @@ INITS.msg=function(){
   const back=$("#msgBack"), title=$("#msgTitle");
   const listView=$("#msgListView"), threadView=$("#msgThreadView");
   const th=$("#msgThread"), typingEl=$("#typing"), inputRow=$("#msgInputRow");
+  const quickRow=$("#quickRow");
   const inp=$("#msgInput");
-  const DAD_LINE="大禹生日快乐，长得和爸爸一样帅了";
-  const contacts={
-    mom:{name:"妈妈",ava:"💗",time:"今天",unread:true, preview:"大禹二十岁生日快乐！", msgs:[], started:false, reply:true},
-    dad:{name:"爸爸",ava:"👨",time:"今天",unread:false, preview:DAD_LINE, msgs:[], started:false, reply:false},
-    great:{name:"太爷爷",ava:"👴",time:"",unread:false, preview:"", msgs:[], started:true, reply:false}
-  };
+  const contacts={};
+  Object.keys(CHATS).forEach(k=>{
+    const s=CHATS[k];
+    contacts[k]={name:s.name,ava:s.ava,time:s.time,unread:!!s.unread,preview:s.preview,
+      msgs:[],started:false,script:s.script,quick:s.quick};
+  });
   let cur=null;
 
   back.onclick=()=>{ if(threadView.style.display!=="none") showList(); };
@@ -685,9 +1280,23 @@ INITS.msg=function(){
     }
     const sc=th.closest(".app-body"); if(sc) sc.scrollTop=sc.scrollHeight;
   }
+  function renderQuick(){
+    if(!quickRow) return;
+    quickRow.innerHTML="";
+    const c=cur?contacts[cur]:null;
+    if(!c || !c.quick || !c.quick.length){ quickRow.style.display="none"; return; }
+    quickRow.style.display="flex";
+    c.quick.forEach(q=>{
+      const b=document.createElement("button");
+      b.className="qchip"; b.textContent=q;
+      b.onclick=()=>{ inp.value=q; send(); };
+      quickRow.appendChild(b);
+    });
+  }
   function showList(){
     cur=null;
     threadView.style.display="none"; inputRow.style.display="none";
+    if(quickRow) quickRow.style.display="none";
     listView.style.display="block"; title.textContent="信息";
     back.setAttribute("data-close","1");
     listView.innerHTML="";
@@ -711,49 +1320,400 @@ INITS.msg=function(){
     title.textContent=c.name; back.removeAttribute("data-close");
     inp.placeholder="给"+c.name+"发消息…";
     typingEl.style.display="none"; typingEl.textContent=c.name+"正在输入…";
-    renderThread(k);
+    renderThread(k); renderQuick();
     if(!c.started){
       c.started=true;
-      if(k==="mom"){
-        MOM_MSGS.forEach((m,i)=>setTimeout(()=>{
-          if(cur!=="mom") return;
-          typingEl.style.display="block";
-          setTimeout(()=>{
-            typingEl.style.display="none";
-            c.msgs.push({me:false,text:m}); addBubble(false,m,c.ava);
-          },550);
-        }, 400+i*1400));
-      }
-      if(k==="dad"){
+      (c.script||[]).forEach((m,i)=>setTimeout(()=>{
+        if(cur!==k) return;
+        typingEl.style.display="block";
         setTimeout(()=>{
-          if(cur!=="dad") return;
-          typingEl.style.display="block";
-          setTimeout(()=>{
-            typingEl.style.display="none";
-            c.msgs.push({me:false,text:DAD_LINE}); addBubble(false,DAD_LINE,c.ava);
-          },1300);
-        },500);
-      }
+          if(cur!==k) return;
+          typingEl.style.display="none";
+          c.msgs.push({me:false,text:m}); addBubble(false,m,c.ava); c.preview=m;
+        },520);
+      }, 420+i*1300));
     }
   }
   const send=()=>{
     const v=inp.value.trim(); if(!v||!cur) return;
-    const c=contacts[cur]; inp.value="";
+    const k2=cur, c=contacts[cur]; inp.value="";
     c.msgs.push({me:true,text:v}); addBubble(true,v,c.ava);
     c.preview=v;
-    if(cur==="mom"){
-      typingEl.style.display="block";
-      setTimeout(()=>{
-        typingEl.style.display="none";
-        if(cur!=="mom") return;
-        const rep="好，妈妈等你回家吃饭。生日要开心呀 🎂";
-        c.msgs.push({me:false,text:rep}); addBubble(false,rep,c.ava); c.preview=rep;
-      },1600);
-    }
+    const rep=aiReply(k2,v);
+    if(!rep) return;
+    typingEl.textContent=c.name+"正在输入…";
+    typingEl.style.display="block";
+    setTimeout(()=>{
+      if(cur!==k2) return;
+      typingEl.style.display="none";
+      c.msgs.push({me:false,text:rep}); addBubble(false,rep,c.ava); c.preview=rep;
+    }, 850+Math.min(1500,v.length*45));
   };
   $("#msgSend").onclick=send;
   inp.onkeydown=e=>{ if(e.key==="Enter") send(); };
   showList();
+};
+
+/* ================= 微信 ================= */
+INITS.wechat=function(){
+  const body=$("#wxBody"), tabs=$("#wxTabs"), title=$("#wxTitle"), back=$("#wxBack");
+  let tab="chat", curKey=null;
+
+  back.onclick=()=>{ if(curKey){ curKey=null; listChats(); } else closeApp(); };
+
+  function listChats(){
+    curKey=null;
+    title.textContent="微信"; back.setAttribute("data-close","1");
+    tabs.style.display="flex";
+    body.innerHTML="";
+    Object.keys(WX_CHATS).forEach(k=>{
+      const c=WX_CHATS[k];
+      const d=document.createElement("div"); d.className="wx-item";
+      d.innerHTML='<div class="wx-ava"></div><div class="wx-main"><div class="wx-name"></div><div class="wx-pre"></div></div>'+
+        '<div style="display:flex;flex-direction:column;align-items:flex-end"><div class="wx-time"></div><div class="wx-tag" style="display:none">1</div></div>';
+      d.querySelector(".wx-ava").textContent=c.ava;
+      d.querySelector(".wx-name").textContent=c.name;
+      const last=c.msgs[c.msgs.length-1];
+      d.querySelector(".wx-pre").textContent=last ? ((last.n?last.n+"：" : "")+(last.text||"").slice(0,18)) : " ";
+      d.querySelector(".wx-time").textContent=c.time||"";
+      if(c.unread){ const t=d.querySelector(".wx-tag"); t.style.display="flex"; t.textContent=c.unread; }
+      d.onclick=()=>openChat(k);
+      body.appendChild(d);
+    });
+  }
+  function openChat(k){
+    const c=WX_CHATS[k]; curKey=k; c.unread=0;
+    title.textContent=c.name; back.removeAttribute("data-close");
+    tabs.style.display="none";
+    body.innerHTML="";
+    const thread=document.createElement("div");
+    thread.style.cssText="display:flex;flex-direction:column;gap:11px;padding:14px 12px";
+    c.msgs.forEach(m=>{
+      if(m.type==="note"){
+        const box=document.createElement("div");
+        const nm=document.createElement("div");
+        nm.style.cssText="font-size:11px;color:#8aa89b;margin:0 2px 5px";
+        nm.textContent=c.name+" · 通知";
+        const n=document.createElement("div"); n.className="wx-note"; n.textContent=m.text;
+        box.appendChild(nm); box.appendChild(n); thread.appendChild(box);
+        return;
+      }
+      const row=document.createElement("div");
+      row.style.cssText="display:flex;align-items:flex-end;gap:8px"+(m.me?";flex-direction:row-reverse":"");
+      if(!m.me){
+        const a=document.createElement("div"); a.className="wx-ava";
+        a.style.cssText="width:32px;height:32px;border-radius:6px;font-size:16px";
+        a.textContent=m.n?m.n.slice(0,1):c.ava;
+        row.appendChild(a);
+      }
+      const b=document.createElement("div"); b.className="wx-bubble "+(m.me?"me":"them");
+      b.textContent=(m.n&&!m.me?m.n+"：" : "")+m.text;
+      row.appendChild(b); thread.appendChild(row);
+    });
+    body.appendChild(thread);
+    if(c.role){
+      const row=document.createElement("div");
+      row.style.cssText="display:flex;gap:8px;padding:10px 12px;border-top:1px solid rgba(255,255,255,.07)";
+      const inp=document.createElement("input"); inp.className="br-input"; inp.placeholder="发消息…";
+      const btn=document.createElement("button"); btn.className="br-go"; btn.style.background="#09b83e"; btn.textContent="发送";
+      row.appendChild(inp); row.appendChild(btn); body.appendChild(row);
+      const send=()=>{
+        const v=inp.value.trim(); if(!v) return; inp.value="";
+        c.msgs.push({me:true,text:v});
+        const rr=document.createElement("div");
+        rr.style.cssText="display:flex;align-items:flex-end;gap:8px;flex-direction:row-reverse";
+        const bb=document.createElement("div"); bb.className="wx-bubble me"; bb.textContent=v;
+        rr.appendChild(bb); thread.appendChild(rr);
+        body.scrollTop=body.scrollHeight;
+        const rep = c.role==="family"
+          ? pick(["妈妈：好，妈妈等你回家吃饭。","爸爸：嗯，注意身体。","妈妈：生日快乐儿子！"])
+          : pick(["朱志鑫：嗯嗯","左航：好","张极：收到"]);
+        setTimeout(()=>{
+          if(curKey!==k) return;
+          c.msgs.push({me:false,text:rep});
+          const r2=document.createElement("div");
+          r2.style.cssText="display:flex;align-items:flex-end;gap:8px";
+          const b2=document.createElement("div"); b2.className="wx-bubble them"; b2.textContent=rep;
+          r2.appendChild(b2); thread.appendChild(r2);
+          body.scrollTop=body.scrollHeight;
+        },1200);
+      };
+      btn.onclick=send;
+      inp.onkeydown=e=>{ if(e.key==="Enter") send(); };
+    }
+    setTimeout(()=>{ body.scrollTop=body.scrollHeight; },30);
+  }
+  function paintTab(){
+    if(tab==="chat") return listChats();
+    curKey=null;
+    tabs.style.display="flex";
+    title.textContent = tab==="contact" ? "通讯录" : tab==="find" ? "发现" : "我";
+    body.innerHTML="";
+    if(tab==="contact"){
+      PHONE_BOOK.forEach(p=>{
+        const d=document.createElement("div"); d.className="wx-item";
+        d.innerHTML='<div class="wx-ava"></div><div class="wx-main"><div class="wx-name"></div><div class="wx-pre"></div></div>';
+        d.querySelector(".wx-ava").textContent=p.ava;
+        d.querySelector(".wx-name").textContent=p.name;
+        d.querySelector(".wx-pre").textContent=p.num;
+        body.appendChild(d);
+      });
+    }else if(tab==="find"){
+      [["🌙","朋友圈"],["📷","扫一扫"],["🎬","视频号"],["🔍","搜一搜"]].forEach(x=>{
+        const d=document.createElement("div"); d.className="wx-item";
+        d.innerHTML='<div class="wx-ava" style="background:#1d2a24"></div><div class="wx-main"><div class="wx-name"></div></div>';
+        d.querySelector(".wx-ava").textContent=x[0];
+        d.querySelector(".wx-name").textContent=x[1];
+        d.onclick=()=>toast(x[1]+" · 暂时没有新内容");
+        body.appendChild(d);
+      });
+    }else{
+      body.innerHTML='<div class="wx-me"><div class="big">禹</div><div class="nm">张泽禹</div><div class="id">微信号：zeyu_0430</div></div>'+
+        '<div style="padding:0 16px"><div class="wx-row"><span>朋友圈</span><span>3 条</span></div>'+
+        '<div class="wx-row"><span>收藏</span><span>12</span></div>'+
+        '<div class="wx-row"><span>设置</span><span>›</span></div></div>';
+    }
+  }
+  tabs.querySelectorAll(".wx-tab").forEach(t=>{
+    t.onclick=()=>{
+      tab=t.dataset.tab;
+      tabs.querySelectorAll(".wx-tab").forEach(x=>x.classList.remove("on"));
+      t.classList.add("on");
+      paintTab();
+    };
+  });
+  listChats();
+};
+
+/* ================= 电话 ================= */
+INITS.tel=function(){
+  const body=$("#telBody"), tabs=$("#phTabs");
+  const overlay=$("#callOverlay"), cName=$("#callName"), cStat=$("#callStat"), cAva=$("#callAva");
+  let pt="log", dial="", t1=null, t2=null;
+
+  function clearTimers(){ clearTimeout(t1); clearTimeout(t2); }
+  function endCall(){ clearTimers(); overlay.classList.remove("on"); }
+  $("#callEnd").onclick=endCall;
+
+  function startCall(name,ava,num){
+    cName.textContent=name||num; cAva.textContent=ava||"📞"; cStat.textContent="正在呼叫…";
+    overlay.classList.add("on");
+    clearTimers();
+    t1=setTimeout(()=>{ cStat.textContent="通话中 00:03"; },2400);
+    t2=setTimeout(()=>{ endCall(); toast("通话已结束"); },9000);
+  }
+  function paintLog(){
+    body.innerHTML="";
+    CALL_LOG.forEach(e=>{
+      const d=document.createElement("div");
+      d.className="ph-item"+(e.ok?"":" locked")+(e.dir==="未接"?" missed":"");
+      d.innerHTML='<div class="pa"></div><div style="flex:1;min-width:0"><div class="pn"></div><div class="pd"></div></div><div class="pm"></div>';
+      d.querySelector(".pa").textContent=e.ava;
+      d.querySelector(".pn").textContent=e.name;
+      d.querySelector(".pd").textContent=e.dir+" · "+e.time+(e.note?" · "+e.note:"");
+      d.querySelector(".pm").innerHTML="<div>"+(e.dur||"—")+"</div><div>"+(e.num||"")+"</div>";
+      d.onclick=()=>{ if(!e.ok){ toast("这个号码不能回拨"); return; } startCall(e.name,e.ava,e.num); };
+      body.appendChild(d);
+    });
+  }
+  function paintDial(){
+    body.innerHTML='<div class="dial-num" id="dialNum">'+dial+'</div>'+
+      '<div class="dialpad" id="dialpad"></div>'+
+      '<button class="callbtn" id="dialCall">📞</button>';
+    const kp=body.querySelector("#dialpad");
+    ["1","2","3","4","5","6","7","8","9","*","0","#"].forEach(k=>{
+      const b=document.createElement("button"); b.className="dbtn"; b.textContent=k;
+      b.onclick=()=>{ dial+=k; body.querySelector("#dialNum").textContent=dial; };
+      kp.appendChild(b);
+    });
+    const del=document.createElement("button"); del.className="dbtn"; del.textContent="⌫";
+    del.onclick=()=>{ dial=dial.slice(0,-1); body.querySelector("#dialNum").textContent=dial; };
+    kp.appendChild(del);
+    body.querySelector("#dialCall").onclick=()=>{
+      const hit=PHONE_BOOK.find(p=>p.num.replace(/\s/g,"")===dial.replace(/\s/g,""));
+      if(dial.replace(/\D/g,"").length>=6) startCall(hit?hit.name:dial, hit?hit.ava:"📞", dial);
+      else toast("请输入完整号码");
+    };
+  }
+  function paintContacts(){
+    body.innerHTML="";
+    PHONE_BOOK.forEach(p=>{
+      const d=document.createElement("div"); d.className="ph-item";
+      d.innerHTML='<div class="pa"></div><div style="flex:1"><div class="pn"></div><div class="pd"></div></div><div class="pm">📞</div>';
+      d.querySelector(".pa").textContent=p.ava;
+      d.querySelector(".pn").textContent=p.name;
+      d.querySelector(".pd").textContent=p.num;
+      d.onclick=()=>startCall(p.name,p.ava,p.num);
+      body.appendChild(d);
+    });
+  }
+  function paint(){
+    if(pt==="log") paintLog(); else if(pt==="dial") paintDial(); else paintContacts();
+    tabs.querySelectorAll(".ph-tab").forEach(x=>x.classList.toggle("on",x.dataset.ptab===pt));
+  }
+  tabs.querySelectorAll(".ph-tab").forEach(t=>{ t.onclick=()=>{ pt=t.dataset.ptab; paint(); }; });
+  paint();
+};
+
+/* ================= 设置 ================= */
+INITS.settings=function(){
+  const b=$("#settingsBody");
+  const groups=[
+    {title:"网络与连接",items:[
+      {ic:"📶",label:"WLAN",val:"HUAWEI-5G",sw:true},
+      {ic:"🔷",label:"蓝牙",val:"已关闭",sw:false},
+      {ic:"📡",label:"移动数据",val:"",sw:true},
+      {ic:"✈️",label:"飞行模式",val:"",sw:false},
+      {ic:"📲",label:"NFC",val:"",sw:true}
+    ]},
+    {title:"显示与声音",items:[
+      {ic:"🌗",label:"显示与亮度",val:"自动"},
+      {ic:"🔊",label:"声音与振动",val:""},
+      {ic:"🖼️",label:"壁纸与主题",val:"春日"}
+    ]},
+    {title:"安全与隐私",items:[
+      {ic:"🔒",label:"锁屏密码",val:"已开启",pwd:true},
+      {ic:"👆",label:"指纹",val:"已录入 2 枚"},
+      {ic:"🛡️",label:"隐私",val:""}
+    ]},
+    {title:"系统",items:[
+      {ic:"🔋",label:"电池",val:"87%"},
+      {ic:"💾",label:"存储",val:"已用 186 GB / 512 GB"},
+      {ic:"🕒",label:"日期与时间",val:"自动"},
+      {ic:"🌐",label:"语言 / Language",val:"",lang:true},
+      {ic:"ℹ️",label:"关于手机",val:"nova 12",about:true}
+    ]}
+  ];
+  b.innerHTML="";
+  groups.forEach(g=>{
+    const t=document.createElement("div"); t.className="st-title"; t.textContent=g.title; b.appendChild(t);
+    const box=document.createElement("div"); box.className="st-group";
+    g.items.forEach(it=>{
+      const d=document.createElement("div"); d.className="st-item";
+      d.innerHTML='<div class="st-ic"></div><div class="st-label"></div><div class="st-val"></div>';
+      d.querySelector(".st-ic").textContent=it.ic;
+      d.querySelector(".st-label").textContent=it.label;
+      if(it.sw!==undefined){
+        const s=document.createElement("div"); s.className="sw"+(it.sw?" on":"");
+        d.querySelector(".st-val").replaceWith(s);
+        s.onclick=e=>{ e.stopPropagation(); s.classList.toggle("on"); toast(it.label+(s.classList.contains("on")?"已开启":"已关闭")); };
+      }else if(it.lang){
+        const sv=d.querySelector(".st-val");
+        sv.innerHTML='<span id="curLangName"></span>';
+        sv.firstChild.textContent=(LANGS.filter(x=>x.k===LANG)[0]||LANGS[0]).name;
+      }else{
+        d.querySelector(".st-val").textContent=it.val||"";
+      }
+      d.onclick=()=>{
+        if(it.pwd) toast("当前锁屏密码：070430");
+        else if(it.lang) openLangSheet();
+        else if(it.about) showAbout();
+        else if(!it.sw) toast(it.label+" · 保持默认");
+      };
+      box.appendChild(d);
+    });
+    b.appendChild(box);
+  });
+  function showAbout(){
+    b.innerHTML='<button class="bigbtn b-back2" id="abBack">‹ 返回</button>'+
+      '<div style="text-align:center;padding:14px 0 6px"><div style="width:78px;height:78px;border-radius:20px;margin:0 auto 14px;background:linear-gradient(160deg,#b9c3c9,#6c7780);display:flex;align-items:center;justify-content:center;font-size:34px">📱</div>'+
+      '<div style="font-size:19px;font-weight:600">HUAWEI nova 12</div>'+
+      '<div style="font-size:12px;color:#7d8a84;margin-top:5px">HarmonyOS 4.2.0</div></div>'+
+      '<div class="st-group">'+
+      '<div class="st-item"><div class="st-label">设备名称</div><div class="st-val">泽禹的手机</div></div>'+
+      '<div class="st-item"><div class="st-label">处理器</div><div class="st-val">麒麟 8000</div></div>'+
+      '<div class="st-item"><div class="st-label">运行内存</div><div class="st-val">12 GB</div></div>'+
+      '<div class="st-item"><div class="st-label">存储</div><div class="st-val">512 GB</div></div>'+
+      '<div class="st-item"><div class="st-label">屏幕</div><div class="st-val">6.7 英寸 · 120Hz</div></div>'+
+      '<div class="st-item"><div class="st-label">序列号</div><div class="st-val">ZY20270430070</div></div>'+
+      '</div>';
+    b.querySelector("#abBack").onclick=()=>INITS.settings();
+  }
+};
+
+/* ================= 浏览器 ================= */
+INITS.browser=function(){
+  const body=$("#brBody"), inp=$("#brInput"), go=$("#brGo");
+  function paintHist(){
+    body.innerHTML='<div class="st-title" style="padding:12px 15px 8px">历史记录</div>';
+    BR_HIST.forEach(it=>{
+      const d=document.createElement("div"); d.className="br-hist";
+      d.innerHTML='<div class="hi">🕘</div><div class="ht"></div><div class="hd"></div>';
+      d.querySelector(".ht").textContent=it.q;
+      d.querySelector(".hd").textContent=it.t;
+      d.onclick=()=>paintDoc(it);
+      body.appendChild(d);
+    });
+  }
+  function paintDoc(it){
+    body.innerHTML='<div style="padding:14px 16px 40px"><div class="br-doc"></div></div>';
+    const doc=body.querySelector(".br-doc");
+    doc.textContent=it.doc;
+    const bk=document.createElement("div");
+    bk.className="br-hist"; bk.style.borderTop="1px solid rgba(255,255,255,.07)";
+    bk.innerHTML='<div class="hi">‹</div><div class="ht">返回搜索结果</div>';
+    bk.onclick=paintHist;
+    body.prepend(bk);
+  }
+  go.onclick=()=>{
+    const q=inp.value.trim(); if(!q) return;
+    const hit=BR_HIST.find(x=>x.q===q);
+    if(hit){ paintDoc(hit); return; }
+    body.innerHTML='<div class="empty">没有找到「'+q+'」的结果<br>（只有历史记录里的内容）</div>';
+  };
+  inp.onkeydown=e=>{ if(e.key==="Enter") go.click(); };
+  paintHist();
+};
+
+/* ================= 时钟 ================= */
+INITS.clock=function(){
+  const b=$("#clockBody");
+  function paint(){
+    const d=new Date();
+    b.innerHTML='<div class="clk-big">'+fmtTime(d)+'</div><div class="clk-sub">'+fmtDate(d)+' · 北京时间</div>'+
+      '<div class="st-title">闹钟</div><div id="alarmBox"></div>'+
+      '<div class="st-title">世界时钟</div><div class="st-group">'+
+      '<div class="st-item"><div class="st-label">北京</div><div class="st-val">'+fmtTime(d)+'</div></div>'+
+      '<div class="st-item"><div class="st-label">哈尔滨</div><div class="st-val">'+fmtTime(d)+'</div></div>'+
+      '</div>';
+    const box=b.querySelector("#alarmBox");
+    ALARMS.forEach((a,i)=>{
+      const row=document.createElement("div"); row.className="alarm";
+      row.innerHTML='<div style="flex:1"><div class="at"></div><div class="al"></div></div><div class="sw'+(a.on?" on":"")+'"></div>';
+      row.querySelector(".at").textContent=a.t;
+      row.querySelector(".al").textContent=a.label;
+      const sw=row.querySelector(".sw");
+      sw.onclick=()=>{ a.on=!a.on; sw.classList.toggle("on",a.on); toast(a.t+" 闹钟"+(a.on?"已开启":"已关闭")); };
+      box.appendChild(row);
+    });
+  }
+  paint();
+};
+
+/* ================= 天气 ================= */
+INITS.weather=function(){
+  const b=$("#weatherBody");
+  function paint(){
+    if(!WEATHER_DATA){ b.innerHTML='<div class="empty">正在获取天气…</div>'; return; }
+    b.innerHTML="";
+    WEATHER_CITIES.forEach(c=>{
+      const d=WEATHER_DATA[c.k]; if(!d) return;
+      const card=document.createElement("div"); card.className="wth-card";
+      card.innerHTML='<div class="wth-top"><div><div class="wth-city"></div><div class="wth-cond"></div></div><div class="wth-temp"></div></div>'+
+        '<div class="wth-meta"><span class="hum"></span><span class="wind"></span></div>';
+      card.querySelector(".wth-city").textContent=(t("cities")||{})[c.k]||d.name;
+      card.querySelector(".wth-cond").textContent=d.cond+(d.ok?"":" · "+t("offline"));
+      card.querySelector(".wth-temp").textContent=d.temp+"°";
+      card.querySelector(".hum").textContent=t("hum")+" "+d.hum+"%";
+      card.querySelector(".wind").textContent=t("wind")+" "+d.wind+" km/h";
+      b.appendChild(card);
+    });
+    const tip=document.createElement("div");
+    tip.style.cssText="font-size:11.5px;color:#5f7a6f;text-align:center;padding:8px 0 20px";
+    tip.textContent=t("daily");
+    b.appendChild(tip);
+  }
+  paint(); loadWeather().then(paint);
 };
 
 /* ================= 备忘录 ================= */
@@ -1165,6 +2125,13 @@ INITS.essay=function(){
 /* ================= 锁屏壁纸 ================= */
 $("#lock").style.backgroundImage="url("+ASSETS.lock+")";
 $("#home").style.backgroundImage="url("+ASSETS.wall+")";
+
+/* ================= 启动初始化 ================= */
+const lockLangBtn = document.getElementById("lockLang");
+if(lockLangBtn) lockLangBtn.onclick = openLangSheet;
+applyLang(LANG);
+loadWeather();
+setInterval(paintCountdown, 600000);
 </script>
 </body>
 </html>
