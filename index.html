@@ -405,9 +405,10 @@ body{
 .t-weibo{background:linear-gradient(160deg,#ffb37a,#e6162d)}
 .tile .glyph{font-size:27px;line-height:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.18))}
 .icon-emoji{font-size:26px}
-#appgrid{top:132px;gap:22px 8px;bottom:118px;overflow-y:auto}
-#dockrow{position:absolute;left:16px;right:16px;bottom:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;
-  padding:12px 26px 8px;background:rgba(30,38,34,.55);border:1px solid rgba(255,255,255,.12);border-radius:28px;
+#appgrid{top:132px;gap:12px 4px;bottom:110px;overflow-y:auto;padding:0 18px}
+#appgrid .appicon{gap:5px}
+#dockrow{position:absolute;left:16px;right:16px;bottom:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;
+  padding:10px 26px 7px;background:rgba(30,38,34,.55);border:1px solid rgba(255,255,255,.12);border-radius:26px;
   backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);z-index:60}
 #dockrow .appicon{gap:4px}
 #dockrow .name{font-size:10.5px}
@@ -1113,6 +1114,14 @@ function wxReply(key, text){
   return null;
 }
 
+/* 微信每个会话的可选快捷消息（也可以自己打字自定义） */
+const WX_QUICK = {
+  mom:["谢谢妈妈","我好想你","老蔫儿和复制粘贴还好吗","我今天吃了蛋糕","等我忙完就回家"],
+  dad:["谢谢爸","我想你们了","钱够花，别担心","我会好好努力的"],
+  grandpa:["爷爷我想您了","您身体好吗","我下周就回去看您","我想喝您炖的鸡汤"],
+  family:["我尽量早点回去","大家别等我先吃","我爱你们","蛋糕给我留一块"]
+};
+
 /* ================= 电话 ================= */
 const CALL_LOG = [
   {name:"妈妈",ava:"💗",dir:"呼入",dur:"12:30",time:"今天 07:42",num:"138 0000 0001",ok:true,note:"家里问你今天怎么过生日"},
@@ -1139,7 +1148,7 @@ const CALL_SCRIPTS = {
     ["妈妈","大禹！生日快乐呀，我的大儿子！"],
     ["泽禹","谢谢妈，一大早就打来了。"],
     ["妈妈","那可不，我定着闹钟呢。今天吃蛋糕了没有？"],
-    ["泽禹","吃了，队友偷偷买的，还是我爱吃的巧克力味。"],
+    ["泽禹","吃了，我自己偷偷买的，还是我爱吃的巧克力味。"],
     ["妈妈","那就好。老蔫儿今天也乖，趴在暖气片边上睡一上午了。"],
     ["泽禹","哈哈，复制粘贴呢？又拆家了没？"],
     ["妈妈","别说了，沙发套又牺牲一个。等你回来管管它们。"],
@@ -1562,13 +1571,26 @@ INITS.wechat=function(){
     });
     body.appendChild(thread);
     if(c.role){
+      /* 可选快捷消息条 */
+      const qk=WX_QUICK[k]||[];
+      if(qk.length){
+        const qrow=document.createElement("div");
+        qrow.style.cssText="display:flex;gap:7px;overflow-x:auto;padding:9px 12px 2px;scrollbar-width:none";
+        qk.forEach(q=>{
+          const chip=document.createElement("button");
+          chip.className="qchip"; chip.textContent=q;
+          chip.onclick=()=>send(q);
+          qrow.appendChild(chip);
+        });
+        body.appendChild(qrow);
+      }
       const row=document.createElement("div");
       row.style.cssText="display:flex;gap:8px;padding:10px 12px;border-top:1px solid rgba(255,255,255,.07)";
-      const inp=document.createElement("input"); inp.className="br-input"; inp.placeholder="发消息…";
+      const inp=document.createElement("input"); inp.className="br-input"; inp.placeholder="自定义消息…";
       const btn=document.createElement("button"); btn.className="br-go"; btn.style.background="#09b83e"; btn.textContent="发送";
       row.appendChild(inp); row.appendChild(btn); body.appendChild(row);
-      const send=()=>{
-        const v=inp.value.trim(); if(!v) return; inp.value="";
+      const send=(preset)=>{
+        const v=(typeof preset==="string"?preset:inp.value).trim(); if(!v) return; inp.value="";
         c.msgs.push({me:true,text:v});
         const rr=document.createElement("div");
         rr.style.cssText="display:flex;align-items:flex-end;gap:8px;flex-direction:row-reverse";
