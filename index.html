@@ -1513,6 +1513,29 @@ INITS.msg=function(){
   showList();
 };
 
+/* 朋友圈（根据备忘录里的真实经历生成） */
+const MOMENTS = [
+  {t:"3 天前", txt:"二周年。场馆里的绿色比我想象的还要多，一片绿海。谢谢好朋友们，我会一直唱下去。", likes:128, cmt:[["妈妈","儿子最棒！"],["朋友","那片绿海有我一份！"]]},
+  {t:"上周", txt:"今天 19 岁了。晚上直播又和大家聊了好久，开心。", likes:96, cmt:[["爸爸","生日快乐，儿子"],["朋友","生日快乐！哈尔滨等你回来"]]},
+  {t:"4 月 15 日", txt:"第一场大型演唱会。我在台上看见了——支持我的，不止两个人了。", likes:210, cmt:[["士大夫","继续加油"],["妈妈","妈妈在电视前哭了"]]},
+  {t:"3 月", txt:"我们终于出道了。这次我终于敢在台上大声说：支持我的人，不止两个了。", likes:305, cmt:[["李老板","好好干"],["朋友","兄弟牛逼！！"]]},
+  {t:"前阵子", txt:"最近迷上了攀岩。虽然有点危险，但是爬到顶的那一下，真的很有成就感。", likes:67, cmt:[["朋友","注意安全啊"],["士大夫","训练别耽误"]]},
+  {t:"很久以前", txt:"拥有了第一把电吉他，给它取名叫夕阳红。", likes:45, cmt:[["妈妈","好好练"],["朋友","名字挺酷"]]},
+  {t:"很久以前", txt:"今天第一次一个人去重庆，舅舅送的机场。爸爸说过，做一件事就要做好。", likes:52, cmt:[["爸爸","照顾好自己"],["妈妈","到了报平安"]]},
+  {t:"很久以前", txt:"今天吃饭离菜太远，只能用奥利奥拌了米饭……不是很好吃。", likes:88, cmt:[["朋友","哈哈哈哈哈什么黑暗料理"],["士大夫","下次给你留菜"]]},
+  {t:"9 月 15 日", txt:"换了把新吉他，好朋友们给它取名叫点点。", likes:73, cmt:[["朋友","点点好听！"]]},
+  {t:"生日会那天", txt:"生日会又和大家见面了，一起唱了好多首歌。下次见！", likes:156, cmt:[["妈妈","注意休息"],["朋友","下次见！"]]}
+];
+/* 微信收藏 · 绿海专题 */
+const FAVS = [
+  {icon:"💚", kind:"文字", t:"绿海之约", c:"收藏于出道夜 —— \"绿色是泽禹的应援色。等我们足够多，就给你一片绿海。\""},
+  {icon:"🌊", kind:"文字", t:"一片绿海", c:"二周年现场，灯牌连成一片。他站在台上看了很久，说：原来绿色没有越来越少，是你们把它攒成了海。"},
+  {icon:"🎤", kind:"语音转文字", t:"粉丝来信（转文字）", c:"\"小宝，你一首一首唱给我们听，我们一片一片把绿色点亮给你看。\""},
+  {icon:"📷", kind:"图片", t:"二周年绿海全景", c:"[图片] 看台视角，满场绿色灯海，中间是小小的舞台。"},
+  {icon:"💬", kind:"聊天记录", t:"朋友的鼓励", c:"朋友：\"哈尔滨的雪是白的，但你的海是绿的。下次演唱会，我还去。\""},
+  {icon:"⭐", kind:"文字", t:"给自己的备忘", c:"绿色不会越来越少。他们只是先暗了一会儿，好在最关键的时候一起亮起来。"}
+];
+
 /* ================= 微信 ================= */
 INITS.wechat=function(){
   const body=$("#wxBody"), tabs=$("#wxTabs"), title=$("#wxTitle"), back=$("#wxBack");
@@ -1642,15 +1665,71 @@ INITS.wechat=function(){
         d.innerHTML='<div class="wx-ava" style="background:#1d2a24"></div><div class="wx-main"><div class="wx-name"></div></div>';
         d.querySelector(".wx-ava").textContent=x[0];
         d.querySelector(".wx-name").textContent=x[1];
-        d.onclick=()=>toast(x[1]+" · 暂时没有新内容");
+        d.onclick=()=>{ if(x[1]==="朋友圈") renderMoments(); else toast(x[1]+" · 暂时没有新内容"); };
         body.appendChild(d);
       });
     }else{
       body.innerHTML='<div class="wx-me"><div class="big">禹</div><div class="nm">张泽禹</div><div class="id">微信号：zeyu_0430</div></div>'+
-        '<div style="padding:0 16px"><div class="wx-row"><span>朋友圈</span><span>3 条</span></div>'+
-        '<div class="wx-row"><span>收藏</span><span>12</span></div>'+
+        '<div style="padding:0 16px"><div class="wx-row" id="wxRowMom"><span>朋友圈</span><span>'+MOMENTS.length+' 条</span></div>'+
+        '<div class="wx-row" id="wxRowFav"><span>收藏</span><span>'+FAVS.length+'</span></div>'+
         '<div class="wx-row"><span>设置</span><span>›</span></div></div>';
+      $("#wxRowMom").onclick=()=>renderMoments();
+      $("#wxRowFav").onclick=()=>renderFavs();
     }
+  }
+  /* 朋友圈时间线 */
+  function renderMoments(){
+    title.textContent="朋友圈";
+    body.innerHTML="";
+    body.style.overflowY="auto";
+    const backRow=document.createElement("div");
+    backRow.className="wx-item";
+    backRow.innerHTML='<div class="wx-ava" style="background:#1d2a24">‹</div><div class="wx-main"><div class="wx-name">返回发现</div></div>';
+    backRow.onclick=()=>{ title.textContent="发现"; paintTab(); };
+    body.appendChild(backRow);
+    const cover=document.createElement("div");
+    cover.style.cssText="height:150px;margin:0 0 34px;background:linear-gradient(160deg,#1f5c3d,#0d2a1c 60%,#071510);position:relative";
+    cover.innerHTML='<div style="position:absolute;right:16px;bottom:-22px;display:flex;align-items:center;gap:8px">'+
+      '<span style="font-size:13px;font-weight:600">张泽禹</span>'+
+      '<span style="width:44px;height:44px;border-radius:8px;background:#243b31;display:flex;align-items:center;justify-content:center;font-size:24px;border:2px solid rgba(255,255,255,.25)">🎸</span></div>'+
+      '<div style="position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);font-size:15px;color:rgba(125,245,184,.85);letter-spacing:2px">绿 色 会 越 来 越 多 的</div>';
+    body.appendChild(cover);
+    MOMENTS.forEach(m=>{
+      const d=document.createElement("div");
+      d.style.cssText="display:flex;gap:10px;padding:14px 14px 12px;border-bottom:1px solid rgba(255,255,255,.06)";
+      let cmts="";
+      m.cmt.forEach(c=>{ cmts+='<div style="font-size:12px;margin-top:3px"><b style="color:#7ddba8">'+c[0]+'：</b>'+c[1]+'</div>'; });
+      d.innerHTML='<div style="width:40px;height:40px;border-radius:6px;background:#243b31;display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0">🎸</div>'+
+        '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:#7ddba8;margin-bottom:3px">张泽禹</div>'+
+        '<div style="font-size:13.5px;line-height:1.55;white-space:pre-wrap">'+m.txt+'</div>'+
+        '<div style="display:flex;justify-content:space-between;margin-top:7px"><span style="font-size:11px;color:rgba(234,255,245,.38)">'+m.t+'</span><span style="font-size:11px;color:rgba(234,255,245,.5)">♡ '+m.likes+'</span></div>'+
+        (cmts?'<div style="margin-top:7px;background:rgba(255,255,255,.05);border-radius:6px;padding:7px 9px">'+cmts+'</div>':"")+
+        '</div>';
+      body.appendChild(d);
+    });
+  }
+  /* 收藏列表 */
+  function renderFavs(){
+    title.textContent="收藏";
+    body.innerHTML="";
+    const backRow=document.createElement("div");
+    backRow.className="wx-item";
+    backRow.innerHTML='<div class="wx-ava" style="background:#1d2a24">‹</div><div class="wx-main"><div class="wx-name">返回</div></div>';
+    backRow.onclick=()=>{ title.textContent="我"; paintTab(); };
+    body.appendChild(backRow);
+    FAVS.forEach(f=>{
+      const d=document.createElement("div");
+      d.className="wx-item"; d.style.alignItems="flex-start";
+      d.innerHTML='<div class="wx-ava" style="background:#1d2a24"></div><div class="wx-main">'+
+        '<div class="wx-name"></div><div class="wx-pre" style="white-space:normal;line-height:1.5"></div>'+
+        '<div style="font-size:10.5px;color:rgba(234,255,245,.35);margin-top:4px"></div></div>';
+      d.querySelector(".wx-ava").textContent=f.icon;
+      d.querySelector(".wx-name").textContent=f.t;
+      d.querySelector(".wx-pre").textContent=f.c;
+      d.querySelector(".wx-main div:last-child").textContent=f.kind;
+      d.onclick=()=>toast(f.kind+" · "+f.t);
+      body.appendChild(d);
+    });
   }
   tabs.querySelectorAll(".wx-tab").forEach(t=>{
     t.onclick=()=>{
