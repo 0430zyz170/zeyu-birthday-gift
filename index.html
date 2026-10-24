@@ -490,6 +490,13 @@ body{
 #callOverlay .cava{width:88px;height:88px;border-radius:50%;background:#243230;display:flex;align-items:center;justify-content:center;font-size:38px}
 #callOverlay .cname{font-size:22px;font-weight:600;margin-top:8px}
 #callOverlay .cstat{font-size:13px;color:#8aa89b}
+#incallInc{position:absolute;inset:0;z-index:260;background:linear-gradient(#101815,#050807);display:none;
+  flex-direction:column;align-items:center;justify-content:center;gap:12px;backdrop-filter:blur(4px)}
+#incallInc.on{display:flex}
+#incallInc .cava{animation:incPulse 1.6s ease-in-out infinite}
+@keyframes incPulse{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(63,232,160,.35)}50%{transform:scale(1.05);box-shadow:0 0 0 18px rgba(63,232,160,0)}}
+#incallInc .inc-row{display:flex;gap:76px;margin-top:46px}
+#incallInc .inc-opt{display:flex;flex-direction:column;align-items:center;gap:8px;font-size:12px;color:#cfe6dc}
 
 /* ========== 设置 ========== */
 .st-group{background:#171f1c;border-radius:14px;margin-bottom:12px;overflow:hidden}
@@ -733,6 +740,17 @@ body{
       <div class="cstat" id="callStat">正在呼叫…</div>
       <div class="ctalk" id="callTalk"></div>
       <button class="callbtn" id="callEnd" style="background:linear-gradient(160deg,#ff6b6b,#d31f1f);color:#fff">✕</button>
+    </div>
+
+    <!-- 来电界面（别人打进来） -->
+    <div id="incallInc">
+      <div class="cava" id="incAva">💗</div>
+      <div class="cname" id="incName">妈妈</div>
+      <div class="cstat" id="incStat">来电 · 移动</div>
+      <div class="inc-row">
+        <div class="inc-opt"><button class="callbtn" id="incDecline" style="background:linear-gradient(160deg,#ff6b6b,#d31f1f);color:#fff">✕</button><span>拒绝</span></div>
+        <div class="inc-opt"><button class="callbtn" id="incAnswer" style="background:linear-gradient(160deg,#34d17b,#0c9a4e);color:#fff">✓</button><span>接听</span></div>
+      </div>
     </div>
 
     <!-- 顶部通知栏 -->
@@ -1783,6 +1801,7 @@ INITS.tel=function(){
       }
     },2400);
   }
+  window._startCall=startCall;
   function paintLog(){
     body.innerHTML="";
     CALL_LOG.forEach(e=>{
@@ -2565,6 +2584,56 @@ if(lockLangBtn) lockLangBtn.onclick = openLangSheet;
 applyLang(LANG);
 loadWeather();
 setInterval(paintCountdown, 600000);
+
+/* ================= 来电功能（会自动打进来，带铃声） ================= */
+let _ringTimer=null, _ringTO=null, _incCaller=null;
+function ringOnce(){
+  try{
+    tone(932,.22,"sine",.14);
+    setTimeout(()=>{ try{ tone(740,.22,"sine",.14); }catch(e){} },260);
+  }catch(e){}
+}
+function stopRing(){
+  if(_ringTimer){ clearInterval(_ringTimer); _ringTimer=null; }
+  if(_ringTO){ clearTimeout(_ringTO); _ringTO=null; }
+  try{ if(navigator.vibrate) navigator.vibrate(0); }catch(e){}
+}
+function hideIncoming(){ $("#incallInc").classList.remove("on"); stopRing(); }
+function incomingCall(name, ava){
+  const inc=$("#incallInc");
+  if(inc.classList.contains("on") || $("#callOverlay").classList.contains("on")) return;
+  _incCaller={name:name,ava:ava};
+  $("#incName").textContent=name;
+  $("#incAva").textContent=ava||"📞";
+  $("#incStat").textContent="来电 · 移动";
+  inc.classList.add("on");
+  ringOnce();
+  _ringTimer=setInterval(ringOnce, 1500);
+  try{ if(navigator.vibrate) navigator.vibrate([400,200,400,200,400]); }catch(e){}
+  /* 30 秒无人接听自动挂断 */
+  _ringTO=setTimeout(()=>{ hideIncoming(); toast("未接来电："+name); _incCaller=null; }, 30000);
+}
+$("#incAnswer").onclick=()=>{
+  const c=_incCaller; hideIncoming(); _incCaller=null;
+  if(!c) return;
+  if(!window._startCall){ try{ INITS.tel(); }catch(e){} }
+  if(window._startCall) window._startCall(c.name, c.ava, "");
+};
+$("#incDecline").onclick=()=>{
+  const c=_incCaller; hideIncoming();
+  if(c) toast("已拒绝 "+c.name+" 的来电");
+  _incCaller=null;
+};
+/* 解锁后 25 秒，妈妈会自己打进来 */
+(function scheduleIncoming(){
+  let done=false;
+  const origUnlock = unlock;
+  unlock = function(){
+    origUnlock();
+    if(done) return; done=true;
+    setTimeout(()=>incomingCall("妈妈","💗"), 25000);
+  };
+})();
 </script>
 </body>
 </html>
