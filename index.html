@@ -405,7 +405,29 @@ body{
 .t-weibo{background:linear-gradient(160deg,#ffb37a,#e6162d)}
 .tile .glyph{font-size:27px;line-height:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.18))}
 .icon-emoji{font-size:26px}
-#appgrid{top:132px;gap:22px 8px}
+#appgrid{top:132px;gap:22px 8px;bottom:118px;overflow-y:auto}
+#dockrow{position:absolute;left:16px;right:16px;bottom:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;
+  padding:12px 26px 8px;background:rgba(30,38,34,.55);border:1px solid rgba(255,255,255,.12);border-radius:28px;
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);z-index:60}
+#dockrow .appicon{gap:4px}
+#dockrow .name{font-size:10.5px}
+
+/* ========== 顶部通知栏 ========== */
+#topNoti{position:absolute;top:-88px;left:10px;right:10px;z-index:180;display:flex;align-items:center;gap:10px;
+  padding:12px 14px;background:rgba(28,36,32,.92);border:1px solid rgba(255,255,255,.12);border-radius:18px;
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);cursor:pointer;
+  transition:top .45s cubic-bezier(.2,.9,.3,1.1);box-shadow:0 8px 28px rgba(0,0,0,.5)}
+#topNoti.on{top:12px}
+#topNoti .tn-ava{width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:19px;flex:none}
+#topNoti .tn-main{flex:1;min-width:0}
+#topNoti .tn-name{font-size:12.5px;font-weight:600;color:#eafff5}
+#topNoti .tn-text{font-size:12px;color:#a9c4b6;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ========== 通话字幕 ========== */
+#callOverlay .ctalk{flex:1;width:100%;overflow-y:auto;padding:12px 22px;display:flex;flex-direction:column;gap:10px}
+#callOverlay .cl{font-size:13.5px;color:#cfe6dc;line-height:1.65;opacity:0;transform:translateY(6px);transition:opacity .35s,transform .35s}
+#callOverlay .cl.show{opacity:1;transform:none}
+#callOverlay .cl b{color:#3fe8a0;font-weight:600;margin-right:6px}
 
 /* ========== 快捷回复 ========== */
 #quickRow{display:flex;gap:8px;overflow-x:auto;padding:8px 14px 0;scrollbar-width:none}
@@ -573,9 +595,6 @@ body{
       </div>
       <div id="appgrid">
         <div class="appicon" data-app="wechat"><div class="tile t-wx"><span class="glyph">💬</span><span class="badge">1</span></div><div class="name">微信</div></div>
-        <div class="appicon" data-app="msg"><div class="tile t-msg"><span class="glyph">✉️</span><span class="badge">1</span></div><div class="name">信息</div></div>
-        <div class="appicon" data-app="tel"><div class="tile t-tel"><span class="glyph">📞</span></div><div class="name">电话</div></div>
-        <div class="appicon" data-app="browser"><div class="tile t-browser"><span class="glyph">🌐</span></div><div class="name">浏览器</div></div>
         <div class="appicon" data-app="weibo"><div class="tile t-weibo"><span class="glyph" style="font-size:22px;font-weight:700;color:#fff">微</span></div><div class="name">微博</div></div>
         <div class="appicon" data-app="watch"><div class="tile t-watch"><span class="glyph">⌚</span></div><div class="name">小红手表</div></div>
         <div class="appicon" data-app="essay"><div class="tile t-essay"><span class="glyph">💌</span></div><div class="name">手写信</div></div>
@@ -587,6 +606,12 @@ body{
         <div class="appicon" data-app="sticker"><div class="tile t-pic"><span class="glyph">📷</span></div><div class="name">大头贴</div></div>
         <div class="appicon" data-app="rec"><div class="tile t-rec"><span class="glyph">🎙️</span></div><div class="name">录音</div></div>
         <div class="appicon" data-app="takeout"><div class="tile t-takeout"><span class="glyph">🍱</span><span class="badge">2</span></div><div class="name">狗的外卖</div></div>
+      </div>
+      <!-- 底部 Dock：电话 / 浏览器 / 信息 -->
+      <div id="dockrow">
+        <div class="appicon" data-app="tel"><div class="tile t-tel"><span class="glyph">📞</span></div><div class="name">电话</div></div>
+        <div class="appicon" data-app="browser"><div class="tile t-browser"><span class="glyph">🌐</span></div><div class="name">浏览器</div></div>
+        <div class="appicon" data-app="msg"><div class="tile t-msg"><span class="glyph">✉️</span><span class="badge">1</span></div><div class="name">信息</div></div>
       </div>
     </div>
 
@@ -717,7 +742,14 @@ body{
       <div class="cava" id="callAva">📞</div>
       <div class="cname" id="callName">妈妈</div>
       <div class="cstat" id="callStat">正在呼叫…</div>
+      <div class="ctalk" id="callTalk"></div>
       <button class="callbtn" id="callEnd" style="background:linear-gradient(160deg,#ff6b6b,#d31f1f);color:#fff">✕</button>
+    </div>
+
+    <!-- 顶部通知栏 -->
+    <div id="topNoti">
+      <div class="tn-ava" id="tnAva">🧣</div>
+      <div class="tn-main"><div class="tn-name" id="tnName">朋友</div><div class="tn-text" id="tnText"></div></div>
     </div>
   </div>
 </div>
@@ -957,7 +989,7 @@ function applyLang(k){
   set("notiName", t("notiName")); set("notiNow", t("notiNow")); set("notiText", t("notiText"));
   const lc = document.getElementById("lockLangCode");
   if(lc){ const l = LANGS.filter(x=>x.k===LANG)[0]; lc.textContent = l?l.code:"简体"; }
-  document.querySelectorAll("#appgrid .appicon").forEach(ic=>{
+  document.querySelectorAll("#home .appicon").forEach(ic=>{
     const nm = ic.querySelector(".name"); const key = ic.dataset.app;
     if(nm && t("apps")[key]) nm.textContent = t("apps")[key];
   });
@@ -1025,26 +1057,29 @@ function aiReply(k,t){
 const WX_CHATS = {
   mom:{name:"妈妈",ava:"💗",time:"今天",unread:1,role:"family",
     msgs:[
-      {me:false,n:"妈妈",text:"大禹生日快乐！🎂"},
-      {me:false,n:"妈妈",text:"给你看老蔫儿今天的照片，他终于把窝挪到暖气片旁边了。"},
-      {me:false,n:"妈妈",text:"复制粘贴今天又把沙发套抓坏了，我刚换的。"},
+      {me:false,n:"妈妈",text:"大禹生日快乐！🎂 妈妈零点就想发了，怕吵醒你。"},
+      {me:false,n:"妈妈",text:"给你看老蔫儿今天的照片，他终于把窝挪到暖气片旁边了，可会找地方了。"},
+      {me:false,n:"妈妈",text:"复制粘贴就不行了，今天又把沙发套抓坏了，我刚换的新的。"},
       {me:false,n:"妈妈",text:"你爸说给你留了鸡腿，等你回来热一热就能吃。"},
-      {me:true,text:"谢谢妈妈！等我下通告就回"},
-      {me:false,n:"妈妈",text:"好好好，不着急。外面照顾好自己，别老熬夜。"}
+      {me:true,text:"谢谢妈妈！看到猫我就放心了，等我下通告就回"},
+      {me:false,n:"妈妈",text:"好好好，不着急。外面照顾好自己，别老熬夜，多喝水。"},
+      {me:false,n:"妈妈",text:"生日快乐，我的大儿子。妈妈为你骄傲。"}
     ]},
   dad:{name:"爸爸",ava:"👨",time:"今天",unread:0,role:"family",
     msgs:[
       {me:false,n:"爸爸",text:"生日快乐。"},
       {me:true,text:"谢谢爸"},
-      {me:false,n:"爸爸",text:"钱够花不够？不够跟我说。"},
-      {me:true,text:"够的，爸别担心"},
-      {me:false,n:"爸爸",text:"嗯。家里都挺好，不用惦记。"}
+      {me:false,n:"爸爸",text:"又长一岁了，在外面自己拿主意，别怕吃苦。"},
+      {me:false,n:"爸爸",text:"钱够花不够？不够跟我说，别硬撑。"},
+      {me:true,text:"够的，爸别担心，公司管吃管住"},
+      {me:false,n:"爸爸",text:"嗯。家里都挺好，不用惦记。有空给你妈多发两条消息，她天天念叨你。"}
     ]},
   grandpa:{name:"爷爷",ava:"👴",time:"昨天",unread:0,role:"family",
     msgs:[
-      {me:false,n:"爷爷",text:"大禹啊，爷爷在电视上看到你了，挺好的。"},
+      {me:false,n:"爷爷",text:"大禹啊，爷爷在电视上看到你了，跳得真好，爷爷看了好几遍。"},
       {me:true,text:"爷爷好！我下周回来看您"},
-      {me:false,n:"爷爷",text:"好好好，爷爷给你炖鸡汤。天凉了，多穿点。"}
+      {me:false,n:"爷爷",text:"好好好，爷爷给你炖鸡汤。天凉了，多穿点，别学人家小年轻耍单儿。"},
+      {me:true,text:"知道啦爷爷，您也注意身体"}
     ]},
   staff:{name:"士大夫",ava:"📋",time:"昨天",unread:2,
     msgs:[
@@ -1060,6 +1095,35 @@ const WX_CHATS = {
   filehelper:{name:"文件传输助手",ava:"📁",time:"",unread:0,
     msgs:[{me:true,text:"攀岩训练计划.docx"}]}
 };
+
+/* 微信多句智能回复 — 按聊天对象+关键词生成 1~3 条回复，支持自定义内容 */
+function wxReply(key, text){
+  const t2=(text||"").toLowerCase();
+  const has=(...ws)=>ws.some(w=>t2.indexOf(w)>=0);
+  if(key==="mom"){
+    if(has("猫","老蔫儿","复制粘贴")) return ["妈妈：它们俩好着呢，老蔫儿现在天天守着暖气片。","妈妈：复制粘贴今天又挨训了，蹲在角落装可怜。"];
+    if(has("谢谢")) return ["妈妈：跟妈还客气啥。","妈妈：生日快乐，大儿子！"];
+    if(has("想")) return ["妈妈：妈妈也想你，想你就看看你的视频。","妈妈：有空打个视频电话呀。"];
+    if(has("累","辛苦")) return ["妈妈：累了就歇会儿，别硬扛。","妈妈：身体是本钱，听见没有？"];
+    if(has("吃","饭")) return ["妈妈：按时吃饭，别老点外卖对付。","妈妈：你爸给你留的鸡腿还冻着呢。"];
+    return pick([["妈妈：好，妈妈知道了。"],["妈妈：嗯嗯，照顾好自己。"],["妈妈：好，别太累。"],["妈妈：行，你忙你的。"]]);
+  }
+  if(key==="dad"){
+    if(has("钱")) return ["爸爸：不够就说，别硬撑。"];
+    if(has("谢谢")) return ["爸爸：嗯。"];
+    if(has("想")) return ["爸爸：知道了。家里都好，放心。"];
+    return pick([["爸爸：嗯，注意身体。"],["爸爸：好。"],["爸爸：行，你自己拿主意。"]]);
+  }
+  if(key==="grandpa"){
+    if(has("回")) return ["爷爷：好好好，爷爷给你炖鸡汤等着。"];
+    if(has("身体","注意")) return ["爷爷：爷爷硬朗着呢，你别操心。"];
+    return pick([["爷爷：好，爷爷记住了。"],["爷爷：乖孩子。"]]);
+  }
+  if(key==="family"){
+    return pick([["妈妈：好，等你回来吃饭。","爸爸：早点回。"],["爸爸：行。","妈妈：路上注意安全。"],["妈妈：好的儿子。"]]);
+  }
+  return null;
+}
 
 /* ================= 电话 ================= */
 const CALL_LOG = [
@@ -1080,6 +1144,56 @@ const PHONE_BOOK = [
   {name:"朋友",ava:"🧣",num:"138 0000 0009"},
   {name:"陌生号码",ava:"❓",num:"+86 139 **** 0921",ok:false}
 ];
+
+/* 通话内容剧本 — 拨通后字幕逐行出现在界面下方 */
+const CALL_SCRIPTS = {
+  "妈妈":[
+    ["妈妈","大禹！生日快乐呀，我的大儿子！"],
+    ["泽禹","谢谢妈，一大早就打来了。"],
+    ["妈妈","那可不，我定着闹钟呢。今天吃蛋糕了没有？"],
+    ["泽禹","吃了，队友偷偷买的，还是我爱吃的巧克力味。"],
+    ["妈妈","那就好。老蔫儿今天也乖，趴在暖气片边上睡一上午了。"],
+    ["泽禹","哈哈，复制粘贴呢？又拆家了没？"],
+    ["妈妈","别说了，沙发套又牺牲一个。等你回来管管它们。"],
+    ["泽禹","好好好，等我这阵忙完就回去。"],
+    ["妈妈","不着急，注意身体，少熬夜。妈妈爱你。"]
+  ],
+  "爸爸":[
+    ["爸爸","喂，大禹。"],
+    ["泽禹","爸。"],
+    ["爸爸","生日快乐。又长一岁了。"],
+    ["泽禹","谢谢爸。"],
+    ["爸爸","在外面，钱够不够花？别硬撑着不说。"],
+    ["泽禹","够的，公司管吃管住，你别担心。"],
+    ["爸爸","嗯。做人踏实点，别飘。累了就回家。"],
+    ["泽禹","知道啦爸，你和我妈也保重身体。"]
+  ],
+  "士大夫":[
+    ["士大夫","泽禹，跟你说下明天的安排。"],
+    ["泽禹","好的，您说。"],
+    ["士大夫","早上六点妆发，八点出发去录制，晚上可能加一场排练。"],
+    ["泽禹","收到。那个综艺的事……"],
+    ["士大夫","综艺先别想了，团体为主，公司的安排你配合。"],
+    ["泽禹","……好的，我明白。"],
+    ["士大夫","别有情绪，机会以后还会有。早点休息。"]
+  ],
+  "李老板":[
+    ["李老板","泽禹啊，我是李老板。"],
+    ["泽禹","李老板好。"],
+    ["李老板","生日是吧？年轻人好好干，公司看好你。"],
+    ["泽禹","谢谢老板，我会努力的。"],
+    ["李老板","嗯，最近表现不错。有什么事找士大夫对接。"],
+    ["泽禹","好的。"]
+  ],
+  "朋友":[
+    ["朋友","大禹！哈尔滨今天下雪了，老大了！"],
+    ["泽禹","真的假的？拍给我看看。"],
+    ["朋友","拍了拍了，一会儿发你。你那边冷不冷？"],
+    ["泽禹","还行，屋里暖和。你多穿点。"],
+    ["朋友","放心。生日快乐啊兄弟，回来请你吃锅包肉！"],
+    ["泽禹","说定了，可不许赖账。"]
+  ]
+};
 
 /* ================= 浏览器记录 ================= */
 const BR_HIST = [
@@ -1150,6 +1264,21 @@ const $$ = s => document.querySelectorAll(s);
 function toast(t){ const el=$("#toast"); el.textContent=t; el.classList.add("on");
   clearTimeout(el._tm); el._tm=setTimeout(()=>el.classList.remove("on"),2200); }
 
+/* 顶部通知栏 — 朋友/微信来消息时从上面滑下来 */
+let tnTimer=null, tnAction=null;
+function showTopNoti(ava, name, text, onTap){
+  const n=$("#topNoti"); if(!n) return;
+  $("#tnAva").textContent=ava||"💬"; $("#tnName").textContent=name||"";
+  $("#tnText").textContent=(text||"").slice(0,40);
+  tnAction=onTap||null;
+  n.classList.add("on");
+  try{ tone(880,.12,"sine",.08); setTimeout(()=>tone(1174,.18,"sine",.08),110); }catch(e){}
+  clearTimeout(tnTimer); tnTimer=setTimeout(()=>n.classList.remove("on"),4200);
+}
+(function(){ const n=document.getElementById("topNoti");
+  if(n) n.addEventListener("click",()=>{ n.classList.remove("on"); if(tnAction){ const f=tnAction; tnAction=null; try{f();}catch(e){} } });
+})();
+
 /* 时钟 */
 function fmtTime(d){ return d.getHours()+":"+String(d.getMinutes()).padStart(2,"0"); }
 function fmtDate(d){ const w="日一二三四五六"[d.getDay()]; return (d.getMonth()+1)+"月"+d.getDate()+"日 星期"+w; }
@@ -1159,18 +1288,8 @@ function tick(){ const d=new Date();
   $("#widgetDate").textContent=fmtDateLocale(d)+" · "+t("widgetSub"); }
 tick(); setInterval(tick,20000);
 
-/* ================= 开机 ================= */
-let booted=false;
-function bootOpen(){
-  if(booted) return; booted=true;
-  try{ chime(); }catch(e){}
-  $("#flash").classList.add("on");
-  $("#boot").classList.add("hide");
-  setTimeout(()=>{ $("#flash").classList.remove("on"); },320);
-  setTimeout(()=>{ const b=$("#boot"); if(b) b.remove(); },900);
-}
-$("#boot").addEventListener("click",bootOpen);
-setTimeout(()=>{ if(!booted) bootOpen(); },4300);
+/* ================= 开机（动画已取消，直接进锁屏，避免有人进不去） ================= */
+(function(){ const b=$("#boot"); if(b) b.remove(); const f=$("#flash"); if(f) f.remove(); })();
 
 /* 音效工具 — Web Audio 纯合成，无需外置音频文件 */
 let _ac=null;
@@ -1248,6 +1367,12 @@ let unlocked=false;
 function unlock(){
   if(unlocked) return; unlocked=true;
   $("#home").classList.add("on");
+  /* 解锁 12 秒后朋友从顶部滑下一条消息 */
+  setTimeout(()=>{
+    const txt="大禹！哈尔滨今天下雪了，我拍了好多照片，等你回来看！";
+    CHATS.friend.script.push(txt); CHATS.friend.preview=txt;
+    showTopNoti("🧣","朋友",txt,()=>{ openApp("msg"); });
+  },12000);
 }
 $("#lockNoti").addEventListener("click",e=>{ e.stopPropagation(); toast("先输入锁屏密码"); });
 $("#lkForgot").onclick=()=>toast("提示：密码是泽禹的生日，年(两位)月日");
@@ -1380,9 +1505,10 @@ INITS.msg=function(){
     typingEl.textContent=c.name+"正在输入…";
     typingEl.style.display="block";
     setTimeout(()=>{
-      if(cur!==k2) return;
       typingEl.style.display="none";
-      c.msgs.push({me:false,text:rep}); addBubble(false,rep,c.ava); c.preview=rep;
+      c.msgs.push({me:false,text:rep}); c.preview=rep;
+      if(cur!==k2){ c.unread=true; showTopNoti(c.ava,c.name,rep,()=>{ openApp("msg"); setTimeout(()=>openThread(k2),80); }); return; }
+      addBubble(false,rep,c.ava);
     }, 850+Math.min(1500,v.length*45));
   };
   $("#msgSend").onclick=send;
@@ -1461,16 +1587,24 @@ INITS.wechat=function(){
         const bb=document.createElement("div"); bb.className="wx-bubble me"; bb.textContent=v;
         rr.appendChild(bb); thread.appendChild(rr);
         body.scrollTop=body.scrollHeight;
-        const rep = pick(["妈妈：好，妈妈等你回家吃饭。","爸爸：嗯，注意身体。","妈妈：好好好，不着急。"]);
-        setTimeout(()=>{
-          if(curKey!==k) return;
-          c.msgs.push({me:false,text:rep});
-          const r2=document.createElement("div");
-          r2.style.cssText="display:flex;align-items:flex-end;gap:8px";
-          const b2=document.createElement("div"); b2.className="wx-bubble them"; b2.textContent=rep;
-          r2.appendChild(b2); thread.appendChild(r2);
-          body.scrollTop=body.scrollHeight;
-        },1200);
+        const reps = wxReply(k,v)||["妈妈：好，妈妈知道了。"];
+        reps.forEach((rep,i)=>{
+          setTimeout(()=>{
+            const nameEnd=rep.indexOf("：");
+            const rn=nameEnd>0?rep.slice(0,nameEnd):c.name;
+            const rt=nameEnd>0?rep.slice(nameEnd+1):rep;
+            c.msgs.push({me:false,n:rn,text:rt});
+            if(curKey!==k){ c.unread=(c.unread||0)+1; showTopNoti(c.ava,rn,rt,()=>{ openApp("wechat"); setTimeout(()=>openChat(k),80); }); return; }
+            const r2=document.createElement("div");
+            r2.style.cssText="display:flex;align-items:flex-end;gap:8px";
+            const a2=document.createElement("div"); a2.className="wx-ava";
+            a2.style.cssText="width:32px;height:32px;border-radius:6px;font-size:16px";
+            a2.textContent=rn.slice(0,1);
+            const b2=document.createElement("div"); b2.className="wx-bubble them"; b2.textContent=rt;
+            r2.appendChild(a2); r2.appendChild(b2); thread.appendChild(r2);
+            body.scrollTop=body.scrollHeight;
+          }, 900+i*1300);
+        });
       };
       btn.onclick=send;
       inp.onkeydown=e=>{ if(e.key==="Enter") send(); };
@@ -1525,16 +1659,40 @@ INITS.tel=function(){
   const overlay=$("#callOverlay"), cName=$("#callName"), cStat=$("#callStat"), cAva=$("#callAva");
   let pt="log", dial="", t1=null, t2=null;
 
-  function clearTimers(){ clearTimeout(t1); clearTimeout(t2); }
+  function clearTimers(){ clearTimeout(t1); clearTimeout(t2); clearInterval(t3); (window._ctT||[]).forEach(clearTimeout); window._ctT=[]; }
   function endCall(){ clearTimers(); overlay.classList.remove("on"); }
-  $("#callEnd").onclick=endCall;
+  $("#callEnd").onclick=()=>{ endCall(); toast("通话已结束"); };
 
+  let t3=null;
   function startCall(name,ava,num){
     cName.textContent=name||num; cAva.textContent=ava||"📞"; cStat.textContent="正在呼叫…";
+    const talk=$("#callTalk"); talk.innerHTML="";
     overlay.classList.add("on");
     clearTimers();
-    t1=setTimeout(()=>{ cStat.textContent="通话中 00:03"; },2400);
-    t2=setTimeout(()=>{ endCall(); toast("通话已结束"); },9000);
+    try{ tone(440,.4,"sine",.07); }catch(e){}
+    const script=CALL_SCRIPTS[name]||null;
+    let sec=0;
+    t1=setTimeout(()=>{
+      cStat.textContent="通话中 00:00";
+      try{ tone(660,.15,"sine",.1); }catch(e){}
+      t3=setInterval(()=>{ sec++; cStat.textContent="通话中 00:"+String(sec).padStart(2,"0"); },1000);
+      if(script){
+        script.forEach((ln,i)=>{
+          window._ctT.push(setTimeout(()=>{
+            const d=document.createElement("div"); d.className="cl";
+            d.innerHTML="<b></b><span></span>";
+            d.querySelector("b").textContent=ln[0]+"：";
+            d.querySelector("span").textContent=ln[1];
+            talk.appendChild(d);
+            requestAnimationFrame(()=>d.classList.add("show"));
+            talk.scrollTop=talk.scrollHeight;
+          }, 900+i*1700));
+        });
+        t2=setTimeout(()=>{ endCall(); toast("通话已结束"); }, 900+script.length*1700+2600);
+      } else {
+        t2=setTimeout(()=>{ endCall(); toast("对方无人接听"); }, 6000);
+      }
+    },2400);
   }
   function paintLog(){
     body.innerHTML="";
@@ -2144,46 +2302,85 @@ WATCH_GAMES.catch=function(){
 };
 
 /* ================= 狗的外卖订单 ================= */
-/* 张泽禹的外卖历史 —— 甜食、东北菜、小甜水 */
+/* 张泽禹的外卖历史 —— 甜食、东北菜、小甜水（品牌均为虚构） */
 const ORDERS = [
-  {id:"tk001",shop:"好利来蛋糕·哈尔滨旗舰店",avatar:"🍰",time:"今天 14:22",status:"配送中",total:138.8,items:[
+  {id:"tk001",shop:"甜屿烘焙·中央大街店",avatar:"🍰",time:"今天 14:22",status:"配送中",total:138.8,items:[
     {n:"半熟芝士蛋糕（原味）",p:68},
     {n:"抹茶生巧 6 枚装",p:38},
     {n:"芒果班戟 ×2",p:32.8}
   ],tag:"甜食"},
-  {id:"tk002",shop:"蜜雪冰城",avatar:"🧋",time:"今天 11:05",status:"已送达",total:32,items:[
-    {n:"珍珠奶茶（大杯）",p:12},
+  {id:"tk002",shop:"奶盖小屋",avatar:"🧋",time:"今天 11:05",status:"已送达",total:32,items:[
+    {n:"招牌珍珠奶茶（大杯）",p:12},
     {n:"草莓圣代",p:8},
-    {n:"柠檬水 ×2",p:12}
+    {n:"蜂蜜柠檬水 ×2",p:12}
   ],tag:"小甜水"},
-  {id:"tk003",shop:"老昌春饼·中央大街店",avatar:"🥟",time:"昨天 19:48",status:"已完成",total:166,items:[
+  {id:"tk003",shop:"松北饺子馆",avatar:"🥟",time:"昨天 19:48",status:"已完成",total:166,items:[
     {n:"东北酸菜饺子（30只）",p:58},
     {n:"锅包肉（大份）",p:48},
     {n:"地三鲜",p:28},
     {n:"凉拌东北大拉皮",p:18},
     {n:"米饭 ×3",p:14}
   ],tag:"东北菜"},
-  {id:"tk004",shop:"奈雪的茶",avatar:"🍹",time:"昨天 15:30",status:"已完成",total:42,items:[
-    {n:"霸气芝士草莓",p:22},
+  {id:"tk004",shop:"茶麓鲜果茶",avatar:"🍹",time:"昨天 15:30",status:"已完成",total:42,items:[
+    {n:"芝士草莓满满",p:22},
     {n:"奥利奥宝藏奶茶",p:20}
   ],tag:"小甜水"},
-  {id:"tk005",shop:"马迭尔冰棍",avatar:"🍦",time:"前天 22:10",status:"已完成",total:28,items:[
-    {n:"原味马迭尔 ×4",p:20},
+  {id:"tk005",shop:"北境冰品",avatar:"🍦",time:"前天 22:10",status:"已完成",total:28,items:[
+    {n:"老式奶油冰棍 ×4",p:20},
     {n:"朗姆酒口味 ×2",p:8}
   ],tag:"甜食"},
-  {id:"tk006",shop:"张包铺·老道外店",avatar:"🥟",time:"前天 18:20",status:"已完成",total:98,items:[
+  {id:"tk006",shop:"江畔包子铺",avatar:"🥟",time:"前天 18:20",status:"已完成",total:98,items:[
     {n:"排骨包子 ×6",p:36},
     {n:"三鲜包子 ×6",p:30},
     {n:"小米粥 ×2",p:12},
     {n:"酱牛肉（小份）",p:20}
   ],tag:"东北菜"},
-  {id:"tk007",shop:"喜茶",avatar:"🧃",time:"3 天前 16:45",status:"已完成",total:38,items:[
-    {n:"多肉葡萄（大杯）",p:24},
+  {id:"tk007",shop:"萄汽气泡水",avatar:"🧃",time:"3 天前 16:45",status:"已完成",total:38,items:[
+    {n:"多肉葡萄气泡饮（大杯）",p:24},
     {n:"脆波波",p:14}
   ],tag:"小甜水"},
-  {id:"tk008",shop:"格瓦斯小铺",avatar:"🥤",time:"4 天前 12:00",status:"已完成",total:22,items:[
-    {n:"正宗秋林格瓦斯 ×3",p:18},
-    {n:"哈尔滨啤酒 ×2",p:4}
+  {id:"tk008",shop:"面包发酵小铺",avatar:"🥤",time:"4 天前 12:00",status:"已完成",total:22,items:[
+    {n:"老式面包发酵汽水 ×3",p:18},
+    {n:"冻梨汁 ×2",p:4}
+  ],tag:"小甜水"},
+  {id:"tk009",shop:"黑土灶东北菜",avatar:"🍲",time:"4 天前 19:30",status:"已完成",total:148,items:[
+    {n:"小鸡炖蘑菇（榛蘑）",p:68},
+    {n:"排骨炖豆角",p:52},
+    {n:"玉米饼 ×4",p:16},
+    {n:"蘸酱菜拼盘",p:12}
+  ],tag:"东北菜"},
+  {id:"tk010",shop:"蜜罐甜品",avatar:"🍮",time:"5 天前 20:15",status:"已完成",total:56,items:[
+    {n:"焦糖布丁 ×2",p:26},
+    {n:"提拉米苏杯",p:22},
+    {n:"玫瑰奶冻",p:8}
+  ],tag:"甜食"},
+  {id:"tk011",shop:"楂楂红了",avatar:"🍡",time:"6 天前 17:40",status:"已完成",total:30,items:[
+    {n:"冰糖葫芦（山楂）×2",p:16},
+    {n:"草莓糖葫芦",p:14}
+  ],tag:"甜食"},
+  {id:"tk012",shop:"咕嘟砂锅居",avatar:"🍜",time:"6 天前 12:10",status:"已完成",total:76,items:[
+    {n:"砂锅坛肉",p:38},
+    {n:"酸菜白肉砂锅",p:26},
+    {n:"米饭 ×2",p:12}
+  ],tag:"东北菜"},
+  {id:"tk013",shop:"雪乡酸奶铺",avatar:"🥛",time:"一周前 15:20",status:"已完成",total:36,items:[
+    {n:"老式玻璃瓶酸奶 ×3",p:24},
+    {n:"蓝莓炒酸奶",p:12}
+  ],tag:"小甜水"},
+  {id:"tk014",shop:"关东煮·小摊",avatar:"🍢",time:"一周前 21:50",status:"已完成",total:34,items:[
+    {n:"萝卜 ×2",p:6},
+    {n:"鱼丸 ×4",p:12},
+    {n:"年糕福袋 ×2",p:10},
+    {n:"昆布汤",p:6}
+  ],tag:"东北菜"},
+  {id:"tk015",shop:"云朵舒芙蕾",avatar:"🥞",time:"一周前 14:00",status:"已完成",total:62,items:[
+    {n:"原味舒芙蕾（现烤）",p:36},
+    {n:"枫糖浆 + 奶油",p:12},
+    {n:"热可可",p:14}
+  ],tag:"甜食"},
+  {id:"tk016",shop:"冻梨研究所",avatar:"🍐",time:"一周前 10:30",status:"已完成",total:26,items:[
+    {n:"东北冻梨 ×4",p:16},
+    {n:"冻柿子 ×2",p:10}
   ],tag:"小甜水"}
 ];
 const TK_ICONS = {甜食:"🍰", 东北菜:"🥟", 小甜水:"🧋"};
