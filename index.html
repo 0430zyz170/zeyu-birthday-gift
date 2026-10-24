@@ -19,7 +19,7 @@ body{
 /* ========== 手机外框 ========== */
 #phone{
   position:relative;width:min(410px,100vw);height:min(880px,100dvh);height:min(880px,100vh);
-  background:#000;border-radius:0;overflow:hidden;
+  background:#16211c;border-radius:0;overflow:hidden;
 }
 @media (min-width:480px) and (min-height:920px){
   #phone{border-radius:54px;box-shadow:0 0 0 11px #17201c,0 0 0 13px #0a0f0d,0 30px 80px rgba(0,0,0,.8),0 0 120px rgba(63,232,160,.06)}
@@ -75,7 +75,7 @@ body{
 .batt i{display:block;height:100%;width:100%;background:#7df5b8;border-radius:1px}
 
 /* ========== 锁屏 ========== */
-#lock{position:absolute;inset:0;z-index:100;background:#000 center/cover no-repeat;transition:transform .45s cubic-bezier(.3,.9,.3,1),opacity .45s;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+#lock{position:absolute;inset:0;z-index:100;background:linear-gradient(165deg,#2b3d34 0%,#16211c 45%,#0a0f0d 100%) center/cover no-repeat;background-color:#16211c;transition:transform .45s cubic-bezier(.3,.9,.3,1),opacity .45s;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 #lock *{touch-action:none}
 #lock .dim{position:absolute;inset:0;background:linear-gradient(rgba(0,0,0,.18) 0%,rgba(0,0,0,.05) 40%,rgba(0,0,0,.55) 100%)}
 .lock-time{position:absolute;top:74px;left:0;right:0;text-align:center;font-size:72px;font-weight:200;letter-spacing:2px;
@@ -96,7 +96,7 @@ body{
 #lock.unlocked{transform:translateY(-14%) scale(1.06);opacity:0;pointer-events:none}
 
 /* ========== 桌面 ========== */
-#home{position:absolute;inset:0;z-index:50;background:#000 center/cover no-repeat;opacity:0;pointer-events:none;transition:opacity .4s}
+#home{position:absolute;inset:0;z-index:50;background:linear-gradient(165deg,#31473c 0%,#1a2620 50%,#0d1210 100%) center/cover no-repeat;background-color:#1a2620;opacity:0;pointer-events:none;transition:opacity .4s}
 #home.on{opacity:1;pointer-events:auto}
 #home .hdim{position:absolute;inset:0;background:linear-gradient(rgba(0,0,0,.14),rgba(0,0,0,.3))}
 .widget{position:absolute;top:52px;left:16px;right:16px;background:rgba(20,30,26,.55);backdrop-filter:blur(12px);
